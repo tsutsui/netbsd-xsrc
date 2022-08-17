@@ -455,6 +455,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 			   strerror(errno));
 		wstype = WSDISPLAY_TYPE_UNKNOWN;
 	}
+	fPtr->wstype = wstype;
 
 	if (ioctl(fPtr->fd, WSDISPLAYIO_GET_FBINFO, &fPtr->fbi) != 0) {
 		struct wsdisplay_fbinfo info;
@@ -911,7 +912,6 @@ WsfbScreenInit(SCREEN_INIT_ARGS_DECL)
 	VisualPtr visual;
 	int ret, flags, ncolors;
 	int wsmode = WSDISPLAYIO_MODE_DUMBFB;
-	int wstype;
 	int width;
 	size_t len;
 
@@ -965,13 +965,6 @@ WsfbScreenInit(SCREEN_INIT_ARGS_DECL)
 	if (ioctl(fPtr->fd, WSDISPLAYIO_SMODE, &wsmode) == -1) {
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 			   "ioctl WSDISPLAYIO_SMODE: %s\n",
-			   strerror(errno));
-		return FALSE;
-	}
-	/* Get wsdisplay type to handle quirks */
-	if (ioctl(fPtr->fd, WSDISPLAYIO_GTYPE, &wstype) == -1) {
-		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-			   "ioctl WSDISPLAY_GTYPE: %s\n",
 			   strerror(errno));
 		return FALSE;
 	}
@@ -1166,7 +1159,7 @@ WsfbScreenInit(SCREEN_INIT_ARGS_DECL)
 		return FALSE;
 
 #if defined(__NetBSD__) && defined(WSDISPLAY_TYPE_LUNA)
-	if (wstype == WSDISPLAY_TYPE_LUNA) {
+	if (fPtr->wstype == WSDISPLAY_TYPE_LUNA) {
 		ncolors = fPtr->fbi.fbi_subtype.fbi_cmapinfo.cmap_entries;
 		if (ncolors > 0) {
 			/*

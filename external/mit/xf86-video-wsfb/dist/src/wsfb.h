@@ -59,6 +59,7 @@
 typedef struct {
 	int			fd; /* file descriptor of open device */
 	struct wsdisplayio_fbinfo fbi;
+	int			wstype;
 	int			rotate;
 	unsigned char*		fbstart;
 	unsigned char*		fbmem;
