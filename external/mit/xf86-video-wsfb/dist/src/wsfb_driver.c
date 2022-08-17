@@ -570,14 +570,25 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 		 * XXX
 		 * LUNA's color framebuffers support 4bpp or 8bpp
 		 * but they have multiple 1bpp VRAM planes like ancient VGA.
-		 * For now, Xorg server supports only the first one plane
-		 * as 1bpp monochrome server.
-		 *
-		 * Note OpenBSD/luna88k workarounds this by switching depth
-		 * and palette settings by WSDISPLAYIO_SETGFXMODE ioctl.
 		 */
-		default_depth = 1;
-		bitsperpixel = 1;
+		if (bitsperpixel == 8) {
+			/*
+			 * For 8bpp one, we can use the bitplane ops with
+			 * shadow update proc as amiga.
+			 */
+			fPtr->planarAfb = TRUE;
+		} else {
+			/*
+			 * For 4bpp one, just use only the first one plane
+			 * as 1bpp monochrome server.
+			 *
+			 * Note OpenBSD/luna88k workarounds this by
+			 * switching depth and palette settings by
+			 * WSDISPLAYIO_SETGFXMODE ioctl.
+			 */
+			default_depth = 1;
+			bitsperpixel = 1;
+		}
 	}
 #endif
 #ifdef WSDISPLAY_TYPE_AMIGACC
@@ -930,6 +941,15 @@ WsfbScreenInit(SCREEN_INIT_ARGS_DECL)
 	case 4:
 	case 8:
 		len = fPtr->fbi.fbi_stride * fPtr->fbi.fbi_height;
+#ifdef WSDISPLAY_TYPE_LUNA
+		/*
+		 * XXX
+		 * Maybe not only for LUNA but also all planar ops
+		 * because stride is in bytes, not pixels.
+		 */
+		if (fPtr->wstype == WSDISPLAY_TYPE_LUNA && fPtr->planarAfb)
+			len *= fPtr->fbi.fbi_bitsperpixel;
+#endif
 		break;
 	case 15:
 	case 16:
@@ -1653,6 +1673,12 @@ WsfbDGAAddModes(ScrnInfoPtr pScrn)
 		pDGAMode->pixmapHeight = pDGAMode->imageHeight;
 		pDGAMode->maxViewportX = pScrn->virtualX -
 			pDGAMode->viewportWidth;
+#ifdef WSDISPLAY_TYPE_LUNA
+		/* XXX: LUNA planar framebuffer needs some modification? */
+		if (fPtr->wstype == WSDISPLAY_TYPE_LUNA && fPtr->planarAfb)
+			pDGAMode->maxViewportX = pScrn->displayWidth -
+			    pDGAMode->viewportWidth;
+#endif
 		pDGAMode->maxViewportY = pScrn->virtualY -
 			pDGAMode->viewportHeight;
 
