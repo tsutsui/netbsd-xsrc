@@ -112,8 +112,8 @@ MROP_NAME(alphaTgaDoBitblt)(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
     int tmpSrc;
 
     fbFd *inf = &alphaFbs[pSrc->pScreen->myNum];
-    unsigned char *fb = inf->fb;
-    tga_reg_t **regs = inf->regs.tgaregs;
+    volatile unsigned char *fb = inf->fb;
+    volatile tga_reg_t **regs = inf->regs.tgaregs;
     int creg = 0;
 
     if (pSrc != pDst)

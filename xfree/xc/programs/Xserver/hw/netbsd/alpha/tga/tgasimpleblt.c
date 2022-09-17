@@ -61,7 +61,7 @@ alphaTgaDoBitbltSimple(
 		unsigned int *pdstBase,
 		unsigned int widthSrc,
 		unsigned int widthDst,
-		tga_reg_t **regs,
+		volatile tga_reg_t **regs,
 		int alu,
 		int sx,
 		int sy,
@@ -202,21 +202,27 @@ alphaTgaDoBitbltSimple(
 		}
 	}
 
+#ifdef __alpha__
 #define mb    __asm__ __volatile__("mb" : : : "memory")
+#else
+#ifdef __mips__
+#define mb    asm volatile(".set push;.set mips2;nop;sync;.set pop":::"memory")
+#endif
+#endif
 	mb;
 	regs[creg][TGA_REG_GPSR] = pshift;
 	while (h--) {
-	    unsigned char *Bsrc;
-	    unsigned char *Bdst;
+	    volatile unsigned char *Bsrc;
+	    volatile unsigned char *Bdst;
 	    int xloop = rw;
 
-	    Bsrc = (unsigned char *)(psrcBase) + psrcLine + sdirm;
-	    Bdst = (unsigned char *)(pdstBase) + pdstLine + ddirm;
+	    Bsrc = (volatile unsigned char *)(psrcBase) + psrcLine + sdirm;
+	    Bdst = (volatile unsigned char *)(pdstBase) + pdstLine + ddirm;
 
 	    mb;
 	    x = 0;
-	    *((unsigned *)Bsrc + x) = ~0; mb;
-	    *((unsigned *)Bdst + x) = dpremask; mb;
+	    *(volatile unsigned *)(Bsrc + x) = ~0; mb;
+	    *(volatile unsigned *)(Bdst + x) = dpremask; mb;
 	    x += cxdir*32;
 	    xloop -= 32;
 #if 0
@@ -228,26 +234,28 @@ alphaTgaDoBitbltSimple(
 	    }
 #else
 	    for (; xloop >= 32; x += cxdir*32, xloop -= 32) {
-		*((unsigned *)(Bsrc + x)) = ~0; mb;
-		*((unsigned *)(Bdst + x)) = ~0; mb;
+		*(volatile unsigned *)(Bsrc + x) = ~0; mb;
+		*(volatile unsigned *)(Bdst + x) = ~0; mb;
 	    }
 #endif
 	    if (xloop >= 32) {
-		*((unsigned *)(Bsrc + x)) = ~0; mb;
-		*((unsigned *)(Bdst + x)) = ~0; mb;
+		*(volatile unsigned *)(Bsrc + x) = ~0; mb;
+		*(volatile unsigned *)(Bdst + x) = ~0; mb;
 		x += cxdir*32;
 		xloop -= 32;
 	    }
 	    if (xloop > 0) {
-		*((unsigned *)(Bsrc + x)) = ~0; mb;
-		*((unsigned *)(Bdst + x)) = dpostmask; mb;
+		*(volatile unsigned *)(Bsrc + x) = ~0; mb;
+		*(volatile unsigned *)(Bdst + x) = dpostmask; mb;
 	    }
 	    psrcLine += widthSrc * 4;
 	    pdstLine += widthDst * 4;
 	}
 	mb;
 	regs[creg][TGA_REG_GPSR] = 0;
+	mb;
 	regs[creg][TGA_REG_GMOR] = 0x0000;	/* Simple Mode */
+	mb;
 	regs[creg][TGA_REG_GOPR] = 0x0003;	/* GXcopy */
 #undef mb
 }

@@ -113,7 +113,7 @@ MROP_NAME(alphaSfbDoBitblt)(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
 
     fbFd *inf = &alphaFbs[pSrc->pScreen->myNum];
     unsigned char *fb = inf->fb;
-    sfb_reg_t **regs = inf->regs.sfbregs;
+    volatile sfb_reg_t **regs = inf->regs.sfbregs;
     int creg = 0;
 
     if (pSrc != pDst)

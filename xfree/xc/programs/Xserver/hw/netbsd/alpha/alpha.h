@@ -155,8 +155,8 @@ typedef struct {
     int		    size;	/* Frame buffer size */
     int		    offset;	/* offset into the fb */
     union {
-	    tga_reg_t       *tgaregs[4];  /* Registers, and their aliases */
-	    sfb_reg_t       *sfbregs[4];  /* Registers, and their aliases */
+	    volatile tga_reg_t *tgaregs[4];  /* Registers, and their aliases */
+	    volatile sfb_reg_t *sfbregs[4];  /* Registers, and their aliases */
     } regs;
 #define tgaregs0 regs.tgaregs[0]
 #define tgaregs1 regs.tgaregs[1]

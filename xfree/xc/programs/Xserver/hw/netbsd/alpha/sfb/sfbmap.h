@@ -25,4 +25,4 @@
 #include <dev/tc/sfbreg.h>
 
 void alphaSfbDoBitbltSimple(unsigned int *, unsigned int *, unsigned int,
-    unsigned int, sfb_reg_t **, int, int, int, int, int, int, int, int, int);
+    unsigned int, volatile sfb_reg_t **, int, int, int, int, int, int, int, int, int);
