@@ -80,10 +80,7 @@ visible in the source.
 
 
 void 
-alphaSfbCopyWindow(pWin, ptOldOrg, prgnSrc)
-    WindowPtr pWin;
-    DDXPointRec ptOldOrg;
-    RegionPtr prgnSrc;
+alphaSfbCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
 {
     DDXPointPtr pptSrc;
     register DDXPointPtr ppt;

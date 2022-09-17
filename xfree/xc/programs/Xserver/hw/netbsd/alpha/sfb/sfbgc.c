@@ -237,9 +237,7 @@ GCOps	alphaSfbNonTEOps = {
 };
 
 GCOps *
-alphaSfbMatchCommon (pGC, devPriv)
-    GCPtr	    pGC;
-    cfbPrivGCPtr    devPriv;
+alphaSfbMatchCommon (GCPtr pGC, cfbPrivGCPtr devPriv)
 {
     if (pGC->lineWidth != 0)
 	return 0;
@@ -281,8 +279,7 @@ alphaSfbMatchCommon (pGC, devPriv)
 }
 
 Bool
-alphaSfbCreateGC(pGC)
-    register GCPtr pGC;
+alphaSfbCreateGC(register GCPtr pGC)
 {
     cfbPrivGC  *pPriv;
 
@@ -324,10 +321,8 @@ alphaSfbCreateGC(pGC)
 */
 
 void
-alphaSfbValidateGC(pGC, changes, pDrawable)
-    register GCPtr  pGC;
-    unsigned long   changes;
-    DrawablePtr	    pDrawable;
+alphaSfbValidateGC(register GCPtr pGC, unsigned long changes,
+    DrawablePtr pDrawable)
 {
     int         mask;		/* stateChanges */
     int         index;		/* used for stepping through bitfields */

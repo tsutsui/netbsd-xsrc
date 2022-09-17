@@ -80,10 +80,7 @@ visible in the source.
 
 
 void 
-alphaTgaCopyWindow(pWin, ptOldOrg, prgnSrc)
-    WindowPtr pWin;
-    DDXPointRec ptOldOrg;
-    RegionPtr prgnSrc;
+alphaTgaCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
 {
     DDXPointPtr pptSrc;
     register DDXPointPtr ppt;

@@ -66,12 +66,8 @@ Author: Keith Packard
 #include <dev/pci/tgareg.h>
 
 void
-MROP_NAME(alphaTgaDoBitblt)(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
-    DrawablePtr	    pSrc, pDst;
-    int		    alu;
-    RegionPtr	    prgnDst;
-    DDXPointPtr	    pptSrc;
-    unsigned long   planemask;
+MROP_NAME(alphaTgaDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst, int alu,
+    RegionPtr prgnDst, DDXPointPtr pptSrc, unsigned long planemask)
 {
     unsigned int *psrcBase, *pdstBase;	
 				/* start of src and dst bitmaps */

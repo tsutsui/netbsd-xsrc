@@ -237,9 +237,7 @@ GCOps	alphaTgaNonTEOps = {
 };
 
 GCOps *
-alphaTgaMatchCommon (pGC, devPriv)
-    GCPtr	    pGC;
-    cfbPrivGCPtr    devPriv;
+alphaTgaMatchCommon (GCPtr pGC, cfbPrivGCPtr devPriv)
 {
     if (pGC->lineWidth != 0)
 	return 0;
@@ -281,8 +279,7 @@ alphaTgaMatchCommon (pGC, devPriv)
 }
 
 Bool
-alphaTgaCreateGC(pGC)
-    register GCPtr pGC;
+alphaTgaCreateGC(register GCPtr pGC)
 {
     cfbPrivGC  *pPriv;
 
@@ -324,10 +321,8 @@ alphaTgaCreateGC(pGC)
 */
 
 void
-alphaTgaValidateGC(pGC, changes, pDrawable)
-    register GCPtr  pGC;
-    unsigned long   changes;
-    DrawablePtr	    pDrawable;
+alphaTgaValidateGC(register GCPtr pGC, unsigned long changes,
+    DrawablePtr pDrawable)
 {
     int         mask;		/* stateChanges */
     int         index;		/* used for stepping through bitfields */

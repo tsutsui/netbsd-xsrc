@@ -97,10 +97,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 static Bool alphaSfbScreenInit(
     register ScreenPtr, pointer, int, int, int, int, int, int);
 
-static void CGUpdateColormap(pScreen, dex, count, rmap, gmap, bmap)
-    ScreenPtr	pScreen;
-    int		dex, count;
-    u_char	*rmap, *gmap, *bmap;
+static void CGUpdateColormap(ScreenPtr pScreen, int dex, int count,
+    u_char *rmap, u_char *gmap, u_char *bmap)
 {
 #ifdef USE_WSCONS
     struct wsdisplay_cmap alphaCmap;
@@ -127,8 +125,7 @@ static void CGUpdateColormap(pScreen, dex, count, rmap, gmap, bmap)
 #endif
 }
 
-void alphaSfbInstallColormap(cmap)
-    ColormapPtr	cmap;
+void alphaSfbInstallColormap(ColormapPtr cmap)
 {
     SetupScreen(cmap->pScreen);
     register int i;
@@ -181,8 +178,7 @@ void alphaSfbInstallColormap(cmap)
     WalkTree(cmap->pScreen, TellGainedMap, (pointer) &(cmap->mid));
 }
 
-void alphaSfbUninstallColormap(cmap)
-    ColormapPtr	cmap;
+void alphaSfbUninstallColormap(ColormapPtr cmap)
 {
     SetupScreen(cmap->pScreen);
     if (cmap == pPrivate->installedMap) {
@@ -200,19 +196,14 @@ void alphaSfbUninstallColormap(cmap)
     }
 }
 
-int alphaSfbListInstalledColormaps(pScreen, pCmapList)
-    ScreenPtr	pScreen;
-    Colormap	*pCmapList;
+int alphaSfbListInstalledColormaps(ScreenPtr pScreen, Colormap *pCmapList)
 {
     SetupScreen(pScreen);
     *pCmapList = pPrivate->installedMap->mid;
     return (1);
 }
 
-static void CGStoreColors(pmap, ndef, pdefs)
-    ColormapPtr	pmap;
-    int		ndef;
-    xColorItem	*pdefs;
+static void CGStoreColors(ColormapPtr pmap, int ndef, xColorItem *pdefs)
 {
     SetupScreen(pmap->pScreen);
     u_char	rmap[256], gmap[256], bmap[256];
@@ -235,8 +226,7 @@ static void CGStoreColors(pmap, ndef, pdefs)
     }
 }
 
-static void CGScreenInit (pScreen)
-    ScreenPtr	pScreen;
+static void CGScreenInit (ScreenPtr pScreen)
 {
 #ifndef STATIC_COLOR /* { */
     SetupScreen (pScreen);
@@ -257,9 +247,7 @@ static void CGScreenInit (pScreen)
  * Restore color map to white-on-black, and call alphaCloseScreen
  */
 static Bool
-alphaSfbCloseScreen (i, pScreen)
-    int i;
-    ScreenPtr pScreen;
+alphaSfbCloseScreen (int i, ScreenPtr pScreen)
 {
     SetupScreen(pScreen);
     u_char greymap[256];
@@ -271,11 +259,12 @@ alphaSfbCloseScreen (i, pScreen)
     return alphaCloseScreen(i, pScreen);
 }
 
-Bool alphaSFBInit (screen, pScreen, argc, argv)
-    int	    	  screen;    	/* what screen am I going to be */
-    ScreenPtr	  pScreen;  	/* The Screen to initialize */
-    int	    	  argc;	    	/* The number of the Server's arguments. */
-    char    	  **argv;   	/* The arguments themselves. Don't change! */
+Bool alphaSFBInit (
+    int	    	  screen,    	/* what screen am I going to be */
+    ScreenPtr	  pScreen,  	/* The Screen to initialize */
+    int	    	  argc,	    	/* The number of the Server's arguments. */
+    char    	  **argv    	/* The arguments themselves. Don't change! */
+)
 {
 	unsigned char *fb = fb = alphaFbs[screen].fb;
 	unsigned char *fbr;
@@ -353,13 +342,16 @@ fprintf(stderr, "alphaScreenInit failed\n");
 }
 
 Bool
-alphaSfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
-    register ScreenPtr pScreen;
-    pointer pbits;		/* pointer to screen bitmap */
-    int xsize, ysize;		/* in pixels */
-    int dpix, dpiy;		/* dots per inch */
-    int width;			/* pixel width of frame buffer */
-    int	bpp;			/* bits per pixel of root */
+alphaSfbSetupScreen(
+    register ScreenPtr pScreen,
+    pointer pbits,		/* pointer to screen bitmap */
+    int xsize,			/* in pixels */
+    int ysize,			/* in pixels */
+    int dpix,			/* dots per inch */
+    int dpiy,			/* dots per inch */
+    int width,			/* pixel width of frame buffer */
+    int bpp			/* bits per pixel of root */
+)
 {
     switch (bpp) {
     case 32:
@@ -383,13 +375,16 @@ alphaSfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
 }
 
 Bool
-alphaSfbFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
-    register ScreenPtr pScreen;
-    pointer pbits;		/* pointer to screen bitmap */
-    int xsize, ysize;		/* in pixels */
-    int dpix, dpiy;		/* dots per inch */
-    int width;			/* pixel width of frame buffer */
-    int bpp;			/* bits per pixel of root */
+alphaSfbFinishScreenInit(
+    register ScreenPtr pScreen,
+    pointer pbits,		/* pointer to screen bitmap */
+    int xsize,			/* in pixels */
+    int ysize,			/* in pixels */
+    int dpix,			/* dots per inch */
+    int dpiy,			/* dots per inch */
+    int width,			/* pixel width of frame buffer */
+    int bpp			/* bits per pixel of root */
+)
 {
     Bool retval;
 
@@ -420,13 +415,16 @@ alphaSfbFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
 }
 
 Bool
-alphaSfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
-    register ScreenPtr pScreen;
-    pointer pbits;		/* pointer to screen bitmap */
-    int xsize, ysize;		/* in pixels */
-    int dpix, dpiy;		/* dots per inch */
-    int width;			/* pixel width of frame buffer */
-    int bpp;			/* bits per pixel of root */
+alphaSfbScreenInit(
+    register ScreenPtr pScreen,
+    pointer pbits,		/* pointer to screen bitmap */
+    int xsize,			/* in pixels */
+    int ysize,			/* in pixels */
+    int dpix,			/* dots per inch */
+    int dpiy,			/* dots per inch */
+    int width,			/* pixel width of frame buffer */
+    int bpp			/* bits per pixel of root */
+)
 {
     if (!alphaSfbSetupScreen(pScreen, pbits, xsize, ysize, dpix,
 	dpiy, width, bpp))

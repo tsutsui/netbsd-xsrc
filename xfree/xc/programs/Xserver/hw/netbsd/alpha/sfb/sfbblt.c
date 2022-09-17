@@ -66,12 +66,8 @@ Author: Keith Packard
 #include <dev/tc/sfbreg.h>
 
 void
-MROP_NAME(alphaSfbDoBitblt)(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
-    DrawablePtr	    pSrc, pDst;
-    int		    alu;
-    RegionPtr	    prgnDst;
-    DDXPointPtr	    pptSrc;
-    unsigned long   planemask;
+MROP_NAME(alphaSfbDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst, int alu,
+    RegionPtr prgnDst, DDXPointPtr pptSrc, unsigned long planemask)
 {
     unsigned int *psrcBase, *pdstBase;	
 				/* start of src and dst bitmaps */
