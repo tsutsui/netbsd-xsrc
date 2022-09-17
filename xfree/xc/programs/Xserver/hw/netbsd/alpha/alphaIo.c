@@ -49,6 +49,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define NEED_EVENTS
 #include    "alpha.h"
 #include    "mi.h"
+#include    "os.h"
 
 /*-
  *-----------------------------------------------------------------------
@@ -178,7 +179,6 @@ ddxGiveUp(void)
 int
 ddxProcessArgument(int argc, char *argv[], int i)
 {
-    extern void UseMsg();
 
     if (!strcmp(argv[i], "-noaccel")) {
 	alphaTgaAccelerate = 0;

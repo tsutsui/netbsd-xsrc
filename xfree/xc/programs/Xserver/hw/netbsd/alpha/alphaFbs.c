@@ -73,6 +73,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /****************************************************************/
 
 #include "alpha.h"
+#include "screenint.h"
 #include <sys/mman.h>
 #include <stdio.h>
 
@@ -119,7 +120,6 @@ Bool alphaScreenAllocate (
     ScreenPtr	pScreen)
 {
     alphaScreenPtr    pPrivate;
-    extern int AllocateScreenPrivateIndex();
 
     if (generation != serverGeneration)
     {
@@ -176,10 +176,7 @@ Bool alphaScreenInit (
     ScreenPtr	pScreen)
 {
     SetupScreen(pScreen);
-    extern void   alphaBlockHandler();
-    extern void   alphaWakeupHandler();
     static ScreenPtr autoRepeatScreen;
-    extern miPointerScreenFuncRec   alphaPointerScreenFuncs;
 
     pPrivate->installedMap = 0;
     pPrivate->CloseScreen = pScreen->CloseScreen;

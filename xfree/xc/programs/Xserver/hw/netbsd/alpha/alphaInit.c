@@ -2,7 +2,8 @@
 
 #include    "alpha.h"
 #include    "gcstruct.h"
-/* #include    "mi.h" */
+#include    "inputstr.h"
+#include    "mi.h"
 #include    "mibstore.h"
 #include    "cfb.h"
 
@@ -326,7 +327,6 @@ void InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 void InitInput(int argc, char **argv)
 {
     DeviceIntPtr	p, k;
-    extern Bool mieqInit();
 
     p = AddInputDevice(alphaMouseProc, TRUE);
     k = AddInputDevice(alphaKbdProc, TRUE);
@@ -336,7 +336,7 @@ void InitInput(int argc, char **argv)
     RegisterPointerDevice(p);
     RegisterKeyboardDevice(k);
     miRegisterPointerDevice(screenInfo.screens[0], p);
-    (void) mieqInit (k, p);
+    (void) mieqInit (&k->public, &p->public);
 #define SET_FLOW(fd) fcntl(fd, F_SETFL, FNDELAY | FASYNC)
     (void) OsSignal(SIGIO, SigIOHandler);
 #define WANT_SIGNALS(fd) fcntl(fd, F_SETOWN, getpid())

@@ -31,12 +31,7 @@
 #include "Xproto.h"
 
 /* general system headers */
-#ifndef NOSTDHDRS
-# include <stdlib.h>
-#else
-# include <malloc.h>
-extern char *getenv();
-#endif
+#include <stdlib.h>
 
 /* system headers common to both SunOS and Solaris */
 #include <sys/param.h>
@@ -51,17 +46,11 @@ extern char *getenv();
 #include <errno.h>
 #include <memory.h>
 
-#ifdef X_NOT_STDC_ENV
-extern int errno;
-#endif
-
 #include <dev/wscons/wsconsio.h>
 
 #include <dev/pci/tgareg.h>
 #include <dev/tc/sfbreg.h>
 #define LK_KLL 8 /* from dev/dec/lk201var.h XXX */
-
-extern int gettimeofday();
 
 /* 
  * Server specific headers
@@ -189,6 +178,8 @@ extern int		alphaScreenIndex;
 
 extern Bool		alphaTgaAccelerate;
 extern Bool		alphaSfbAccelerate;
+
+extern miPointerScreenFuncRec	alphaPointerScreenFuncs;
 
 extern Bool alphaCursorInitialize(
     ScreenPtr /* pScreen */

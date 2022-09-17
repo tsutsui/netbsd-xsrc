@@ -52,8 +52,9 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 #define NEED_EVENTS
-#include "mi.h"
 #include "alpha.h"
+#include "mi.h"
+#include "cursor.h"
 #include <stdio.h>
 
 Bool alphaActiveZaphod = TRUE;
@@ -315,7 +316,6 @@ static Bool
 alphaCursorOffScreen (ScreenPtr *pScreen, int *x, int *y)
 {
     int	    index, ret = FALSE;
-    extern Bool PointerConfinedToScreen();
 
     if (PointerConfinedToScreen()) return TRUE;
     /*

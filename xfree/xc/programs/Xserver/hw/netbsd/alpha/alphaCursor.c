@@ -38,6 +38,7 @@ from the X Consortium.
 
 #define NEED_EVENTS
 #include    "alpha.h"
+#include    "mfb.h"
 
 #undef FBIOGCURMAX	/* XXX cgd */
 
@@ -78,7 +79,6 @@ alphaCursorRepad (ScreenPtr pScreen, CursorBitsPtr bits,
     PixmapPtr	src, dst;
     BoxRec	box;
     RegionRec	rgnDst;
-    extern int mfbDoBitblt();
 
     if (!(src = GetScratchPixmapHeader(pScreen, bits->width, bits->height,
 				       /*bpp*/ 1, /*depth*/ 1,
@@ -204,8 +204,6 @@ alphaQueryBestSize (int class, unsigned short *pwidth, unsigned short *pheight,
 	break;
     }
 }
-
-extern miPointerScreenFuncRec	alphaPointerScreenFuncs;
 
 #endif
 
