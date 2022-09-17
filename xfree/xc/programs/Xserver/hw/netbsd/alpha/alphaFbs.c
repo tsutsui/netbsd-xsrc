@@ -80,17 +80,10 @@ int alphaScreenIndex;
 
 static unsigned long generation = 0;
 
-#if NeedFunctionPrototypes
 pointer alphaMemoryMap (
     size_t	len,
     off_t	off,
     int		fd)
-#else
-pointer alphaMemoryMap (len, off, fd)
-    size_t	len;
-    off_t	off;
-    int		fd;
-#endif
 {
     int		pagemask, mapsize;
     caddr_t	addr;
@@ -122,13 +115,8 @@ pointer alphaMemoryMap (len, off, fd)
     return mapaddr;
 }
 
-#if NeedFunctionPrototypes
 Bool alphaScreenAllocate (
     ScreenPtr	pScreen)
-#else
-Bool alphaScreenAllocate (pScreen)
-    ScreenPtr	pScreen;
-#endif
 {
     alphaScreenPtr    pPrivate;
     extern int AllocateScreenPrivateIndex();
@@ -148,15 +136,9 @@ Bool alphaScreenAllocate (pScreen)
     return TRUE;
 }
 
-#if NeedFunctionPrototypes
 Bool alphaSaveScreen (
     ScreenPtr	pScreen,
     int		on)
-#else
-Bool alphaSaveScreen (pScreen, on)
-    ScreenPtr	pScreen;
-    int		on;
-#endif
 {
     int		state;
 
@@ -190,13 +172,8 @@ alphaCloseScreen (i, pScreen)
     return ret;
 }
 
-#if NeedFunctionPrototypes
 Bool alphaScreenInit (
     ScreenPtr	pScreen)
-#else
-Bool alphaScreenInit (pScreen)
-    ScreenPtr	pScreen;
-#endif
 {
     SetupScreen(pScreen);
     extern void   alphaBlockHandler();
@@ -219,7 +196,6 @@ Bool alphaScreenInit (pScreen)
     return TRUE;
 }
 
-#if NeedFunctionPrototypes
 Bool alphaInitCommon (
     int		scrn,
     ScreenPtr	pScrn,
@@ -229,17 +205,6 @@ Bool alphaInitCommon (
     Bool	(*cr_cm)(),
     Bool	(*save)(),
     int		fb_off)
-#else
-Bool alphaInitCommon (scrn, pScrn, offset, init1, init2, cr_cm, save, fb_off)
-    int		scrn;
-    ScreenPtr	pScrn;
-    off_t	offset;
-    Bool	(*init1)();
-    void	(*init2)();
-    Bool	(*cr_cm)();
-    Bool	(*save)();
-    int		fb_off;
-#endif
 {
     unsigned char*	fb = alphaFbs[scrn].fb;
 

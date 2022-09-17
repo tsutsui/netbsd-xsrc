@@ -103,19 +103,11 @@ static void ModLight (device, on, led)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
 static void alphaBell (
     int		    percent,
     DeviceIntPtr    device,
     pointer	    ctrl,
     int		    unused)
-#else
-static void alphaBell (percent, device, ctrl, unused)
-    int		    percent;	    /* Percentage of full volume */
-    DeviceIntPtr    device;	    /* Keyboard to ring */
-    pointer	    ctrl;
-    int		    unused;
-#endif
 {
     KeybdCtrl*      kctrl = (KeybdCtrl*) ctrl;
     alphaKbdPrivPtr   pPriv = (alphaKbdPrivPtr) device->public.devicePrivate;
@@ -248,15 +240,9 @@ static void DoLEDs(device, ctrl, pPriv)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
 static void alphaKbdCtrl (
     DeviceIntPtr    device,
     KeybdCtrl*	    ctrl)
-#else
-static void alphaKbdCtrl (device, ctrl)
-    DeviceIntPtr    device;	    /* Keyboard to alter */
-    KeybdCtrl*	    ctrl;
-#endif
 {
     alphaKbdPrivPtr pPriv = (alphaKbdPrivPtr) device->public.devicePrivate;
 
@@ -279,15 +265,9 @@ static void alphaKbdCtrl (device, ctrl)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
 int alphaKbdProc (
     DeviceIntPtr  device,
     int	    	  what)
-#else
-int alphaKbdProc (device, what)
-    DeviceIntPtr  device;	/* Keyboard to manipulate */
-    int	    	  what;	    	/* What to do to it */
-#endif
 {
     int i;
     DevicePtr pKeyboard = (DevicePtr) device;
@@ -391,17 +371,10 @@ int alphaKbdProc (device, what)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
 struct wscons_event* alphaKbdGetEvents (
     int		fd,
     int*	pNumEvents,
     Bool*	pAgain)
-#else
-struct wscons_event* alphaKbdGetEvents (fd, pNumEvents, pAgain)
-    int		fd;
-    int*	pNumEvents;
-    Bool*	pAgain;
-#endif
 {
     int	    	  nBytes;	    /* number of bytes of events available. */
     static struct wscons_event	evBuf[MAXEVENTS];   /* Buffer for wscons_events */
@@ -474,15 +447,9 @@ static Bool DoSpecialKeys(device, xE, fe)
     return FALSE;
 }
 
-#if NeedFunctionPrototypes
 void alphaKbdEnqueueEvent (
     DeviceIntPtr  device,
     struct wscons_event	  *fe)
-#else
-void alphaKbdEnqueueEvent (device, fe)
-    DeviceIntPtr  device;
-    struct wscons_event	  *fe;
-#endif
 {
     xEvent		xE;
     BYTE		keycode;

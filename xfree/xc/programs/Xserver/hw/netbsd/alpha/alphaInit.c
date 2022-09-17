@@ -14,12 +14,10 @@
 
 #ifdef TGASUPPORT
 extern Bool alphaTGAInit(
-#if NeedFunctionPrototypes
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
     char** /* argv */
-#endif
 );
 #define TGAI alphaTGAInit
 #else /* }{ */
@@ -28,12 +26,10 @@ extern Bool alphaTGAInit(
 
 #ifdef SFBSUPPORT
 extern Bool alphaSFBInit(
-#if NeedFunctionPrototypes
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
     char** /* argv */
-#endif
 );
 #define SFBI alphaSFBInit
 #else /* }{ */
@@ -223,17 +219,13 @@ static char** GetDeviceList (argc, argv)
 }
 
 void OsVendorPreInit(
-#if NeedFunctionPrototypes
     void
-#endif
 )
 {
 }
 
 void OsVendorInit(
-#if NeedFunctionPrototypes
     void
-#endif
 )
 {
     static int inited;

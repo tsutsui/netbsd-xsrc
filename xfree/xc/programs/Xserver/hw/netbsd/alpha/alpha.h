@@ -166,12 +166,10 @@ typedef struct {
 } fbFd;
 
 typedef Bool (*alphaFbInitProc)(
-#if NeedFunctionPrototypes
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
     char** /* argv */
-#endif
 );
 
 typedef struct {
@@ -193,59 +191,42 @@ extern Bool		alphaTgaAccelerate;
 extern Bool		alphaSfbAccelerate;
 
 extern Bool alphaCursorInitialize(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */
-#endif
 );
 
 extern void alphaDisableCursor(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */
-#endif
 );
 
 extern void alphaEnqueueEvents(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern Bool alphaSaveScreen(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */,
     int /* on */
-#endif
 );
 
 extern Bool alphaScreenInit(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */
-#endif
 );
 
 extern Bool alphaCloseScreen(
-#if NeedFunctionPrototypes
     int /* i */,
     ScreenPtr /* pScreen */
-#endif
 );
 
 extern pointer alphaMemoryMap(
-#if NeedFunctionPrototypes
     size_t /* len */,
     off_t /* off */,
     int /* fd */
-#endif
 );
 
 extern Bool alphaScreenAllocate(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */
-#endif
 );
 
 extern Bool alphaInitCommon(
-#if NeedFunctionPrototypes
     int /* scrn */,
     ScreenPtr /* pScrn */,
     off_t /* offset */,
@@ -254,57 +235,42 @@ extern Bool alphaInitCommon(
     Bool (* /* cr_cm */)(),
     Bool (* /* save */)(),
     int /* fb_off */
-#endif
 );
 
 extern struct wscons_event* alphaKbdGetEvents(
-#if NeedFunctionPrototypes
     int /* fd */,
     int* /* pNumEvents */,
     Bool* /* pAgain */
-#endif
 );
 
 extern struct wscons_event* alphaMouseGetEvents(
-#if NeedFunctionPrototypes
     int /* fd */,
     int* /* pNumEvents */,
     Bool* /* pAgain */
-#endif
 );
 
 extern void alphaKbdEnqueueEvent(
-#if NeedFunctionPrototypes
     DeviceIntPtr /* device */,
     struct wscons_event * /* fe */
-#endif
 );
 
 extern void alphaMouseEnqueueEvent(
-#if NeedFunctionPrototypes
     DeviceIntPtr /* device */,
     struct wscons_event * /* fe */
-#endif
 );
 
 extern int alphaKbdProc(
-#if NeedFunctionPrototypes
     DeviceIntPtr /* pKeyboard */,
     int /* what */
-#endif
 );
 
 extern int alphaMouseProc(
-#if NeedFunctionPrototypes
     DeviceIntPtr /* pMouse */,
     int /* what */
-#endif
 );
 
 extern void alphaKbdWait(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 /*-
@@ -320,7 +286,6 @@ extern void alphaKbdWait(
 #define TSTOMILLI(ts)	(((ts).tv_nsec/1000000)+((ts).tv_sec*1000))
 
 extern Bool alphaCfbSetupScreen(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */,
     pointer /* pbits */,	/* pointer to screen bitmap */
     int /* xsize */,		/* in pixels */
@@ -329,11 +294,9 @@ extern Bool alphaCfbSetupScreen(
     int /* dpiy */,		/* dots per inch */
     int /* width */,		/* pixel width of frame buffer */
     int	/* bpp */		/* bits per pixel of root */
-#endif
 );
 
 extern Bool alphaCfbFinishScreenInit(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */,
     pointer /* pbits */,	/* pointer to screen bitmap */
     int /* xsize */,		/* in pixels */
@@ -342,11 +305,9 @@ extern Bool alphaCfbFinishScreenInit(
     int /* dpiy */,		/* dots per inch */
     int /* width */,		/* pixel width of frame buffer */
     int	/* bpp */		/* bits per pixel of root */
-#endif
 );
 
 extern Bool alphaCfbScreenInit(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */,
     pointer /* pbits */,	/* pointer to screen bitmap */
     int /* xsize */,		/* in pixels */
@@ -355,81 +316,61 @@ extern Bool alphaCfbScreenInit(
     int /* dpiy */,		/* dots per inch */
     int /* width */,		/* pixel width of frame buffer */
     int	/* bpp */		/* bits per pixel of root */
-#endif
 );
 
 extern void alphaInstallColormap(
-#if NeedFunctionPrototypes
     ColormapPtr /* cmap */
-#endif
 );
 
 extern void alphaUninstallColormap(
-#if NeedFunctionPrototypes
     ColormapPtr /* cmap */
-#endif
 );
 
 extern int alphaListInstalledColormaps(
-#if NeedFunctionPrototypes
     ScreenPtr /* pScreen */,
     Colormap* /* pCmapList */
-#endif
 );
 
 void 
 alphaTgaCopyWindow(
-#if NeedFunctionPrototypes
     WindowPtr /* pWin */,
     DDXPointRec /* ptOldOrg */,
     RegionPtr /* prgnSrc */
-#endif
 );
 
 void 
 alphaTga32CopyWindow(
-#if NeedFunctionPrototypes
     WindowPtr /* pWin */,
     DDXPointRec /* ptOldOrg */,
     RegionPtr /* prgnSrc */
-#endif
 );
 
 Bool
 alphaTgaCreateGC(
-#if NeedFunctionPrototypes
     register GCPtr /* pGC */
-#endif
 );
 
 Bool
 alphaTga32CreateGC(
-#if NeedFunctionPrototypes
     register GCPtr /* pGC */
-#endif
 );
 
 void
 alphaTgaValidateGC(
-#if NeedFunctionPrototypes
     register GCPtr  /* pGC */,
     unsigned long   /* changes */,
     DrawablePtr	    /* pDrawable */
-#endif
 );
 
 void
 alphaTga32ValidateGC(
-#if NeedFunctionPrototypes
     register GCPtr  /* pGC */,
     unsigned long   /* changes */,
     DrawablePtr	    /* pDrawable */
-#endif
 );
 
 RegionPtr
 alphaTgaCopyArea(
-#if NeedFunctionPrototypes
     register DrawablePtr /* pSrcDrawable */,
     register DrawablePtr /* pDstDrawable */,
     GCPtr /* pGC */,
@@ -439,12 +380,10 @@ alphaTgaCopyArea(
     int /* height */,
     int /* dstx */,
     int /* dsty */
-#endif
 );
 
 RegionPtr
 alphaTga32CopyArea(
-#if NeedFunctionPrototypes
     register DrawablePtr /* pSrcDrawable */,
     register DrawablePtr /* pDstDrawable */,
     GCPtr /* pGC */,
@@ -454,86 +393,68 @@ alphaTga32CopyArea(
     int /* height */,
     int /* dstx */,
     int /* dsty */
-#endif
 );
 
 void
 alphaTgaFillSpans(
-#if NeedFunctionPrototypes
     DrawablePtr /* pDrawable */,
     GCPtr	/* pGC */,
     int		/* nInit */,
     DDXPointPtr /* pptInit */,
     int*	/* pwidthInit */,
     int 	/* fSorted */
-#endif
 );
 
 void
 alphaTga32FillSpans(
-#if NeedFunctionPrototypes
     DrawablePtr /* pDrawable */,
     GCPtr	/* pGC */,
     int		/* nInit */,
     DDXPointPtr /* pptInit */,
     int*	/* pwidthInit */,
     int 	/* fSorted */
-#endif
 );
 
 void 
 alphaSfbCopyWindow(
-#if NeedFunctionPrototypes
     WindowPtr /* pWin */,
     DDXPointRec /* ptOldOrg */,
     RegionPtr /* prgnSrc */
-#endif
 );
 
 void 
 alphaSfb32CopyWindow(
-#if NeedFunctionPrototypes
     WindowPtr /* pWin */,
     DDXPointRec /* ptOldOrg */,
     RegionPtr /* prgnSrc */
-#endif
 );
 
 Bool
 alphaSfbCreateGC(
-#if NeedFunctionPrototypes
     register GCPtr /* pGC */
-#endif
 );
 
 Bool
 alphaSfb32CreateGC(
-#if NeedFunctionPrototypes
     register GCPtr /* pGC */
-#endif
 );
 
 void
 alphaSfbValidateGC(
-#if NeedFunctionPrototypes
     register GCPtr  /* pGC */,
     unsigned long   /* changes */,
     DrawablePtr	    /* pDrawable */
-#endif
 );
 
 void
 alphaSfb32ValidateGC(
-#if NeedFunctionPrototypes
     register GCPtr  /* pGC */,
     unsigned long   /* changes */,
     DrawablePtr	    /* pDrawable */
-#endif
 );
 
 RegionPtr
 alphaSfbCopyArea(
-#if NeedFunctionPrototypes
     register DrawablePtr /* pSrcDrawable */,
     register DrawablePtr /* pDstDrawable */,
     GCPtr /* pGC */,
@@ -543,12 +464,10 @@ alphaSfbCopyArea(
     int /* height */,
     int /* dstx */,
     int /* dsty */
-#endif
 );
 
 RegionPtr
 alphaSfb32CopyArea(
-#if NeedFunctionPrototypes
     register DrawablePtr /* pSrcDrawable */,
     register DrawablePtr /* pDstDrawable */,
     GCPtr /* pGC */,
@@ -558,30 +477,25 @@ alphaSfb32CopyArea(
     int /* height */,
     int /* dstx */,
     int /* dsty */
-#endif
 );
 
 void
 alphaSfbFillSpans(
-#if NeedFunctionPrototypes
     DrawablePtr /* pDrawable */,
     GCPtr	/* pGC */,
     int		/* nInit */,
     DDXPointPtr /* pptInit */,
     int*	/* pwidthInit */,
     int 	/* fSorted */
-#endif
 );
 
 void
 alphaSfb32FillSpans(
-#if NeedFunctionPrototypes
     DrawablePtr /* pDrawable */,
     GCPtr	/* pGC */,
     int		/* nInit */,
     DDXPointPtr /* pptInit */,
     int*	/* pwidthInit */,
     int 	/* fSorted */
-#endif
 );
 #endif

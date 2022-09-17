@@ -226,13 +226,8 @@ extern miPointerScreenFuncRec	alphaPointerScreenFuncs;
 
 #endif
 
-#if NeedFunctionPrototypes
 Bool alphaCursorInitialize (
     ScreenPtr	pScreen)
-#else
-Bool alphaCursorInitialize (pScreen)
-    ScreenPtr	pScreen;
-#endif
 {
 #ifdef FBIOGCURMAX
     SetupCursor (pScreen);
@@ -256,13 +251,8 @@ Bool alphaCursorInitialize (pScreen)
 #endif
 }
 
-#if NeedFunctionPrototypes
 void alphaDisableCursor (
     ScreenPtr	pScreen)
-#else
-void alphaDisableCursor (pScreen)
-    ScreenPtr	pScreen;
-#endif
 {
 #ifdef FBIOGCURMAX
     SetupCursor (pScreen);

@@ -85,15 +85,9 @@ miPointerScreenFuncRec alphaPointerScreenFuncs = {
  */
 /*ARGSUSED*/
 static 
-#if NeedFunctionPrototypes
 void alphaMouseCtrl (
     DeviceIntPtr    device,
     PtrCtrl*	    ctrl)
-#else
-void alphaMouseCtrl (device, ctrl)
-    DeviceIntPtr    device;
-    PtrCtrl*	    ctrl;
-#endif
 {
 }
 
@@ -109,15 +103,9 @@ void alphaMouseCtrl (device, ctrl)
  *
  *-----------------------------------------------------------------------
  */
-#if NeedFunctionPrototypes
 int alphaMouseProc (
     DeviceIntPtr  device,
     int	    	  what)
-#else
-int alphaMouseProc (device, what)
-    DeviceIntPtr  device;   	/* Mouse to play with */
-    int	    	  what;	    	/* What to do with it */
-#endif
 {
     DevicePtr	  pMouse = (DevicePtr) device;
     int	    	  format;
@@ -185,17 +173,10 @@ int alphaMouseProc (device, what)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
 struct wscons_event* alphaMouseGetEvents (
     int		fd,
     int*	pNumEvents,
     Bool*	pAgain)
-#else
-struct wscons_event* alphaMouseGetEvents (fd, pNumEvents, pAgain)
-    int		fd;
-    int*	pNumEvents;
-    Bool*	pAgain;
-#endif
 {
     int	    	  nBytes;	    /* number of bytes of events available. */
     static struct wscons_event	evBuf[MAXEVENTS];   /* Buffer for wscons_events */
@@ -266,15 +247,9 @@ MouseAccelerate (device, delta)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
 void alphaMouseEnqueueEvent (
     DeviceIntPtr  device,
     struct wscons_event *fe)
-#else
-void alphaMouseEnqueueEvent (device, fe)
-    DeviceIntPtr  device;   	/* Mouse from which the event came */
-    struct wscons_event *fe;
-#endif
 {
     xEvent		xE;
     alphaPtrPrivPtr	pPriv;	/* Private data for pointer */
