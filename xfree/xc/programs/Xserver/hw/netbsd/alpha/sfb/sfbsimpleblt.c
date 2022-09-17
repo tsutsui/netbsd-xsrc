@@ -57,10 +57,10 @@
 
 void
 alphaSfbDoBitbltSimple(
-		unsigned int *psrcBase,
-		unsigned int *pdstBase,
-		unsigned int widthSrc,
-		unsigned int widthDst,
+		uint32_t *psrcBase,
+		uint32_t *pdstBase,
+		uint32_t widthSrc,
+		uint32_t widthDst,
 		volatile sfb_reg_t **regs,
 		int alu,
 		int sx,
@@ -72,8 +72,8 @@ alphaSfbDoBitbltSimple(
 		int xdir,
 		int ydir)
 {
-	unsigned psrcLine, pdstLine;
-	unsigned dpremask, dpostmask;
+	uint32_t psrcLine, pdstLine;
+	uint32_t dpremask, dpostmask;
 	int rw, endx;
 	int x, y, pshift;
 	int dx_align;
@@ -212,17 +212,17 @@ alphaSfbDoBitbltSimple(
 	mb;
 	regs[creg][SFB_REG_GPSR] = pshift;
 	while (h--) {
-	    volatile unsigned char *Bsrc;
-	    volatile unsigned char *Bdst;
+	    volatile uint8_t *Bsrc;
+	    volatile uint8_t *Bdst;
 	    int xloop = rw;
 
-	    Bsrc = (volatile unsigned char *)(psrcBase) + psrcLine + sdirm;
-	    Bdst = (volatile unsigned char *)(pdstBase) + pdstLine + ddirm;
+	    Bsrc = (volatile uint8_t *)(psrcBase) + psrcLine + sdirm;
+	    Bdst = (volatile uint8_t *)(pdstBase) + pdstLine + ddirm;
 
 	    mb;
 	    x = 0;
-	    *((volatile unsigned *)Bsrc + x) = ~0; mb;
-	    *((volatile unsigned *)Bdst + x) = dpremask; mb;
+	    *((volatile uint32_t *)Bsrc + x) = ~0; mb;
+	    *((volatile uint32_t *)Bdst + x) = dpremask; mb;
 	    x += cxdir*32;
 	    xloop -= 32;
 #if 0
@@ -234,19 +234,19 @@ alphaSfbDoBitbltSimple(
 	    }
 #else
 	    for (; xloop >= 32; x += cxdir*32, xloop -= 32) {
-		*((volatile unsigned *)(Bsrc + x)) = ~0; mb;
-		*((volatile unsigned *)(Bdst + x)) = ~0; mb;
+		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
+		*((volatile uint32_t *)(Bdst + x)) = ~0; mb;
 	    }
 #endif
 	    if (xloop >= 32) {
-		*((volatile unsigned *)(Bsrc + x)) = ~0; mb;
-		*((volatile unsigned *)(Bdst + x)) = ~0; mb;
+		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
+		*((volatile uint32_t *)(Bdst + x)) = ~0; mb;
 		x += cxdir*32;
 		xloop -= 32;
 	    }
 	    if (xloop > 0) {
-		*((volatile unsigned *)(Bsrc + x)) = ~0; mb;
-		*((volatile unsigned *)(Bdst + x)) = dpostmask; mb;
+		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
+		*((volatile uint32_t *)(Bdst + x)) = dpostmask; mb;
 	    }
 	    psrcLine += widthSrc * 4;
 	    pdstLine += widthDst * 4;

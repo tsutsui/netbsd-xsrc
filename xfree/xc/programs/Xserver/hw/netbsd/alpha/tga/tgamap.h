@@ -24,5 +24,5 @@
 
 #include <dev/pci/tgareg.h>
 
-void alphaTgaDoBitbltSimple(unsigned int *, unsigned int *, unsigned int,
-    unsigned int, volatile tga_reg_t **, int, int, int, int, int, int, int, int, int);
+void alphaTgaDoBitbltSimple(uint32_t *, uint32_t *, uint32_t, uint32_t,
+    volatile tga_reg_t **, int, int, int, int, int, int, int, int, int);
