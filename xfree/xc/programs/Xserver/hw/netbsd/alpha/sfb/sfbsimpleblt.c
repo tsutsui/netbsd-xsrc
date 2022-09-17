@@ -35,42 +35,30 @@
 
 #define PSZ	8
 
-#include	"X.h"
-#include	"Xmd.h"
-#include	"Xproto.h"
-#include	"gcstruct.h"
-#include	"windowstr.h"
-#include	"scrnintstr.h"
-#include	"pixmapstr.h"
-#include	"regionstr.h"
-#include	"cfb.h"
-#include	"cfbmskbits.h"
-#include	"cfb8bit.h"
-#include	"fastblt.h"
-#include	"mergerop.h"
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
+#include "gcstruct.h"
+#include "windowstr.h"
+#include "scrnintstr.h"
+#include "pixmapstr.h"
+#include "regionstr.h"
+#include "cfb.h"
+#include "cfbmskbits.h"
+#include "cfb8bit.h"
+#include "fastblt.h"
+#include "mergerop.h"
 
-#include	<stdio.h>
+#include <stdio.h>
 
 #include "alpha.h"
 #include "sfbmap.h"
 #include <dev/tc/sfbreg.h>
 
 void
-alphaSfbDoBitbltSimple(
-		uint32_t *psrcBase,
-		uint32_t *pdstBase,
-		uint32_t widthSrc,
-		uint32_t widthDst,
-		volatile sfb_reg_t **regs,
-		int alu,
-		int sx,
-		int sy,
-		int dx,
-		int dy,
-		int h,
-		int w,
-		int xdir,
-		int ydir)
+alphaSfbDoBitbltSimple(uint32_t *psrcBase, uint32_t *pdstBase,
+    uint32_t widthSrc, uint32_t widthDst, volatile sfb_reg_t **regs,
+    int alu, int sx, int sy, int dx, int dy, int h, int w, int xdir, int ydir)
 {
 	uint32_t psrcLine, pdstLine;
 	uint32_t dpremask, dpostmask;
@@ -147,8 +135,8 @@ alphaSfbDoBitbltSimple(
 		psrcLine = sy * widthSrc * 4;
 		pdstLine = dy * widthDst * 4;
 	} else {
-		psrcLine = (sy+h-1) * -widthSrc * 4;
-		pdstLine = (dy+h-1) * -widthDst * 4;
+		psrcLine = (sy + h - 1) * -widthSrc * 4;
+		pdstLine = (dy + h - 1) * -widthDst * 4;
 	}
 
 	/*
@@ -160,13 +148,13 @@ alphaSfbDoBitbltSimple(
 	ddirm = dx & ~0x1f;
 	dx_align = dx - ddirm;
 	pshift = dx_align - (sx - sdirm);
-	if ((cxdir*pshift < 0) || (cxdir == -1 && pshift == 0)) {
-		pshift   += cxdir*8;
-		ddirm    -= cxdir*8;
-		dx_align += cxdir*8;
+	if ((cxdir * pshift < 0) || (cxdir == -1 && pshift == 0)) {
+		pshift   += cxdir * 8;
+		ddirm    -= cxdir * 8;
+		dx_align += cxdir * 8;
 	}
 
-	rw = abs(dx_align + w) + (cxdir==-1?8:0);
+	rw = abs(dx_align + w) + (cxdir == -1 ? 8 : 0);
 	endx = rw & 0x1f;
 
 	if (cxdir == 1) {
@@ -178,10 +166,10 @@ alphaSfbDoBitbltSimple(
 		}
 	} else {
 		if (dx_align < 0)
-			dpremask = (~0U<<16) |
+			dpremask = (~0U << 16) |
 			    (((0xff >> (-dx_align)) & 0xff) << 8);
 		else
-			dpremask = (~0U<<8) |
+			dpremask = (~0U << 8) |
 			    ((0xff >> (8-dx_align)) & 0xff);
 		endx = 32 - endx;
 		if (endx < 8) {
@@ -226,14 +214,14 @@ alphaSfbDoBitbltSimple(
 	    x += cxdir*32;
 	    xloop -= 32;
 #if 0
-	    for (; xloop >= 64; x += cxdir*64, xloop -= 64) {
+	    for (; xloop >= 64; x += cxdir * 64, xloop -= 64) {
 		regs[creg][SFB_REG_GCSR]   = psrcLine + sdirm + x;
 		regs[creg++][SFB_REG_GCDR] = pdstLine + ddirm + x;
 		if (creg > 3)
 			creg = 0;
 	    }
 #else
-	    for (; xloop >= 32; x += cxdir*32, xloop -= 32) {
+	    for (; xloop >= 32; x += cxdir * 32, xloop -= 32) {
 		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
 		*((volatile uint32_t *)(Bdst + x)) = ~0; mb;
 	    }
@@ -241,7 +229,7 @@ alphaSfbDoBitbltSimple(
 	    if (xloop >= 32) {
 		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
 		*((volatile uint32_t *)(Bdst + x)) = ~0; mb;
-		x += cxdir*32;
+		x += cxdir * 32;
 		xloop -= 32;
 	    }
 	    if (xloop > 0) {
