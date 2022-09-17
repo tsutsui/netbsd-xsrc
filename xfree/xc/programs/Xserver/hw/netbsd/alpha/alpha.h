@@ -183,28 +183,11 @@ typedef struct {
 extern Bool		noXkbExtension;
 #endif
 
-#if 0
-extern Bool		sunAutoRepeatHandlersInstalled;
-extern long		sunAutoRepeatInitiate;
-extern long		sunAutoRepeatDelay;
-#endif
 extern alphaFbDataRec	alphaFbData[];
 extern int		NalphaFbData;
 extern fbFd		alphaFbs[];
-#if 0
-extern Bool		sunSwapLkeys;
-extern Bool		sunFlipPixels;
-#endif
 extern Bool		alphaActiveZaphod;
-#if 0
-extern Bool		sunFbInfo;
-extern Bool		sunCG4Frob;
-extern Bool		sunNoGX;
-#endif
 extern int		alphaScreenIndex;
-#if 0
-extern int*		sunProtected;
-#endif
 
 extern Bool		alphaTgaAccelerate;
 extern Bool		alphaSfbAccelerate;
@@ -221,39 +204,11 @@ extern void alphaDisableCursor(
 #endif
 );
 
-#if 0 /* XXX */
-extern int sunChangeKbdTranslation(
-#if NeedFunctionPrototypes
-    int /* fd */,
-    Bool /* makeTranslated */
-#endif
-);
-
-extern void sunNonBlockConsoleOff(
-#if NeedFunctionPrototypes
-#if defined(SVR4) || defined(__NetBSD__)
-    void
-#else
-    char* /* arg */
-#endif
-#endif
-);
-#endif /* 0 XXX */
-
 extern void alphaEnqueueEvents(
 #if NeedFunctionPrototypes
     void
 #endif
 );
-
-#if 0 /* XXX */
-extern int sunGXInit(
-#if NeedFunctionPrototypes
-    ScreenPtr /* pScreen */,
-    fbFd* /* fb */
-#endif
-);
-#endif /* 0 XXX */
 
 extern Bool alphaSaveScreen(
 #if NeedFunctionPrototypes

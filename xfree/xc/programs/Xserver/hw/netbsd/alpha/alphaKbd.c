@@ -45,127 +45,16 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "alpha.h"
 #include "keysym.h"
 #include <stdio.h>
-#if 0 /* XXX */
-#include "Sunkeysym.h"
-
-#define SUN_LED_MASK	0x0f
-#endif /* 0 XXX */
 #define MIN_KEYCODE	8	/* necessary to avoid the mouse buttons */ /* XXX */
 #define MAX_KEYCODE	255	/* limited by the protocol */ /* XXX */
-#if 0 /* XXX */
-#ifndef KB_SUN4 
-#define KB_SUN4		4
-#endif
-
-#define AUTOREPEAT_INITIATE	200
-#define AUTOREPEAT_DELAY	50
-
-#define tvminus(tv, tv1, tv2)   /* tv = tv1 - tv2 */ \
-		if ((tv1).tv_usec < (tv2).tv_usec) { \
-		    (tv1).tv_usec += 1000000; \
-		    (tv1).tv_sec -= 1; \
-		} \
-		(tv).tv_usec = (tv1).tv_usec - (tv2).tv_usec; \
-		(tv).tv_sec = (tv1).tv_sec - (tv2).tv_sec;
-
-#define tvplus(tv, tv1, tv2)    /* tv = tv1 + tv2 */ \
-		(tv).tv_sec = (tv1).tv_sec + (tv2).tv_sec; \
-		(tv).tv_usec = (tv1).tv_usec + (tv2).tv_usec; \
-		if ((tv).tv_usec > 1000000) { \
-		    (tv).tv_usec -= 1000000; \
-		    (tv).tv_sec += 1; \
-		}
-#endif /* 0 XXX */
 
 extern KeySymsRec alphaKeySyms[];
 extern AlphaModmapRec *alphaModMaps[];
-
-#if 0 /* XXX */
-long	  	  sunAutoRepeatInitiate = 1000 * AUTOREPEAT_INITIATE;
-long	  	  sunAutoRepeatDelay = 1000 * AUTOREPEAT_DELAY;
-
-static int		autoRepeatKeyDown = 0;
-static int		autoRepeatReady;
-static int		autoRepeatFirst;
-static struct timeval	autoRepeatLastKeyDownTv;
-static struct timeval	autoRepeatDeltaTv;
-
-void sunKbdWait()
-{
-    static struct timeval lastChngKbdTransTv;
-    struct timeval tv;
-    struct timeval lastChngKbdDeltaTv;
-    unsigned int lastChngKbdDelta;
-
-    X_GETTIMEOFDAY(&tv);
-    if (!lastChngKbdTransTv.tv_sec)
-	lastChngKbdTransTv = tv;
-    tvminus(lastChngKbdDeltaTv, tv, lastChngKbdTransTv);
-    lastChngKbdDelta = TVTOMILLI(lastChngKbdDeltaTv);
-    if (lastChngKbdDelta < 750) {
-	unsigned wait;
-	/*
-         * We need to guarantee at least 750 milliseconds between
-	 * calls to KIOCTRANS. YUCK!
-	 */
-	wait = (750L - lastChngKbdDelta) * 1000L;
-        usleep (wait);
-        X_GETTIMEOFDAY(&tv);
-    }
-    lastChngKbdTransTv = tv;
-}
-
-static void SwapLKeys(keysyms)
-    KeySymsRec* keysyms;
-{
-    unsigned int i;
-    KeySym k;
-
-    for (i = 2; i < keysyms->maxKeyCode * keysyms->mapWidth; i++)
-	if (keysyms->map[i] == XK_L1 ||
-	    keysyms->map[i] == XK_L2 ||
-	    keysyms->map[i] == XK_L3 ||
-	    keysyms->map[i] == XK_L4 ||
-	    keysyms->map[i] == XK_L5 ||
-	    keysyms->map[i] == XK_L6 ||
-	    keysyms->map[i] == XK_L7 ||
-	    keysyms->map[i] == XK_L8 ||
-	    keysyms->map[i] == XK_L9 ||
-	    keysyms->map[i] == XK_L10) {
-	    /* yes, I could have done a clever two line swap! */
-	    k = keysyms->map[i - 2];
-	    keysyms->map[i - 2] = keysyms->map[i];
-	    keysyms->map[i] = k;
-	}
-}
-#endif /* 0 XXX */
 
 static void SetLights (ctrl, fd)
     KeybdCtrl*	ctrl;
     int fd;
 {
-#if 0 /* XXX */
-    static unsigned char led_tab[16] = {
-	0,
-	WSKBD_LED_NUM,
-	WSKBD_LED_SCROLL,
-	WSKBD_LED_SCROLL | WSKBD_LED_NUM,
-	WSKBD_LED_COMPOSE,
-	WSKBD_LED_COMPOSE | WSKBD_LED_NUM,
-	WSKBD_LED_COMPOSE | WSKBD_LED_SCROLL,
-	WSKBD_LED_COMPOSE | WSKBD_LED_SCROLL | WSKBD_LED_NUM,
-	WSKBD_LED_CAPS,
-	WSKBD_LED_CAPS | WSKBD_LED_NUM,
-	WSKBD_LED_CAPS | WSKBD_LED_SCROLL,
-	WSKBD_LED_CAPS | WSKBD_LED_SCROLL | WSKBD_LED_NUM,
-	WSKBD_LED_CAPS | WSKBD_LED_COMPOSE,
-	WSKBD_LED_CAPS | WSKBD_LED_COMPOSE | WSKBD_LED_NUM,
-	WSKBD_LED_CAPS | WSKBD_LED_COMPOSE | WSKBD_LED_SCROLL,
-	WSKBD_LED_CAPS | WSKBD_LED_COMPOSE | WSKBD_LED_SCROLL | WSKBD_LED_NUM
-    };
-    if (ioctl (fd, WSKBDIO_SETLEDS, (caddr_t)&led_tab[ctrl->leds & 0x0f]) == -1)
-	Error("Failed to set keyboard lights");
-#else  /* ! 0 XXX */
     /*
      * XXX The above ought to work, except that we don't initialize
      * XXX properly for XKBD, so we don't have an info structure which
@@ -178,7 +67,6 @@ static void SetLights (ctrl, fd)
     lockled = (ctrl->leds != 0) * WSKBD_LED_CAPS;
     if (ioctl (fd, WSKBDIO_SETLEDS, (caddr_t)&lockled) == -1)
 	Error("Failed to set keyboard lights");
-#endif /* ! 0 XXX */
 }
 
 
@@ -247,32 +135,6 @@ static void alphaBell (percent, device, ctrl, unused)
 	return;
     }
 }
-
-#if 0	/* XXX */
-static void localEnqueueEvent (xEp, dip, count)
-    xEventPtr xEp;
-    DeviceIntPtr dip;
-    int count;
-{
-#ifndef i386
-    sigset_t holdmask;
-
-#ifdef SVR4
-    (void) sigaddset (&holdmask, SIGPOLL);
-#else
-    (void) sigaddset (&holdmask, SIGIO);
-#endif
-    (void) sigprocmask (SIG_BLOCK, &holdmask, (sigset_t*)NULL);
-    mieqEnqueue (xEp);
-    (void) sigprocmask (SIG_UNBLOCK, &holdmask, (sigset_t*)NULL);
-#else
-    int oldmask = sigblock (sigmask (SIGIO));
-
-    mieqEnqueue (xEp);
-    sigsetmask (oldmask);
-#endif
-}
-#endif
 
 #define XLED_NUM_LOCK    0x1
 #define XLED_COMPOSE     0x4
@@ -365,15 +227,6 @@ static void DoLEDs(device, ctrl, pPriv)
     if (!(ctrl->leds & XLED_SCROLL_LOCK) && (pPriv->leds & XLED_SCROLL_LOCK))
 	    pseudoKey(device, FALSE,
 		LookupKeyCode(XK_Scroll_Lock, &device->key->curKeySyms));
-#if 0
-    if ((ctrl->leds & XLED_COMPOSE) && !(pPriv->leds & XLED_COMPOSE))
-	    pseudoKey(device, TRUE,
-		LookupKeyCode(SunXK_Compose, &device->key->curKeySyms));
-
-    if (!(ctrl->leds & XLED_COMPOSE) && (pPriv->leds & XLED_COMPOSE))
-	    pseudoKey(device, FALSE,
-		LookupKeyCode(SunXK_Compose, &device->key->curKeySyms));
-#endif /* 0 */
 #ifdef XKB
     }
 #endif /* XKB */
@@ -409,16 +262,6 @@ static void alphaKbdCtrl (device, ctrl)
 
     if (pPriv->fd < 0) return;
 
-#if 0 /* XXX */
-    if (ctrl->click != pPriv->click) {
-    	int kbdClickCmd;
-
-	pPriv->click = ctrl->click;
-	kbdClickCmd = pPriv->click ? KBD_CMD_CLICK : KBD_CMD_NOCLICK;
-    	if (ioctl (pPriv->fd, KIOCCMD, &kbdClickCmd) == -1)
- 	    Error("Failed to set keyclick");
-    }
-#endif /* 0 XXX */
     if (pPriv->type <= WSKBD_TYPE_LK401 && pPriv->leds != ctrl->leds & 0x0f)
         DoLEDs(device, ctrl, pPriv);
 
@@ -465,11 +308,6 @@ int alphaKbdProc (device, what)
 	if (!workingKeySyms) {
 	    workingKeySyms = &alphaKeySyms[alphaKbdPriv.type];
 
-#if 0
-	    if (alphaKbdPriv.type == KB_SUN4 && alphaSwapLkeys)
-		SwapLKeys(workingKeySyms);
-#endif
-
 #if MIN_KEYCODE > 0
 	    if (workingKeySyms->minKeyCode < MIN_KEYCODE) {
 		workingKeySyms->minKeyCode += MIN_KEYCODE;
@@ -493,17 +331,6 @@ int alphaKbdProc (device, what)
 	(void) memset ((void *) defaultKeyboardControl.autoRepeats,
 			~0, sizeof defaultKeyboardControl.autoRepeats);
 
-#if 0 /* XXX */
-#ifdef XKB
-	if (noXkbExtension) {
-	    alphaAutoRepeatInitiate = XkbDfltRepeatDelay * 1000;
-	    alphaAutoRepeatDelay = XkbDfltRepeatInterval * 1000;
-#endif
-	autoRepeatKeyDown = 0;
-#ifdef XKB
-	}
-#endif
-#endif /* 0 XXX */
 	pKeyboard->devicePrivate = (pointer)&alphaKbdPriv;
 	pKeyboard->on = FALSE;
 
@@ -518,10 +345,6 @@ int alphaKbdProc (device, what)
 	 * Set the keyboard into "direct" mode and turn on
 	 * event translation.
 	 */
-#if 0 /* XXX */
-	if (alphaChangeKbdTranslation(pPriv->fd,TRUE) == -1)
-	    FatalError("Can't set keyboard translation\n");
-#endif /* 0 XXX */
 #ifdef WSKBDIO_SETVERSION
 	{
 	    int version = WSKBDIO_EVENT_VERSION;
@@ -538,21 +361,9 @@ int alphaKbdProc (device, what)
     case DEVICE_CLOSE:
     case DEVICE_OFF:
 	pPriv = (alphaKbdPrivPtr)pKeyboard->devicePrivate;
-#if 0 /* XXX */
-	if (pPriv->type == KB_SUN4) {
-	    /* dumb bug in Sun's keyboard! Turn off LEDS before resetting */
-	    pPriv->leds = 0;
-	    ctrl->leds = 0;
-	    SetLights(ctrl, pPriv->fd);
-	}
-#endif /* 0 XXX */
 	/*
 	 * Restore original keyboard directness and translation.
 	 */
-#if 0 /* XXX */
-	if (alphaChangeKbdTranslation(pPriv->fd,FALSE) == -1)
-	    FatalError("Can't reset keyboard translation\n");
-#endif /* 0 XXX */
 	RemoveEnabledDevice(pPriv->fd);
 	pKeyboard->on = FALSE;
 	break;
@@ -650,9 +461,6 @@ static Bool DoSpecialKeys(device, xE, fe)
     if (xE->u.u.type == KeyRelease 
 	&& (ksym == XK_Num_Lock 
 	|| ksym == XK_Scroll_Lock 
-#if 0 /* XXX */
-	|| ksym == SunXK_Compose
-#endif /* 0 XXX */
 	|| (keyModifiers & LockMask))) 
 	return TRUE;
 
@@ -660,42 +468,9 @@ static Bool DoSpecialKeys(device, xE, fe)
     bit = 1 << (keycode & 7);
     if ((*kptr & bit) &&
 	(ksym == XK_Num_Lock || ksym == XK_Scroll_Lock ||
-#if 0 /* XXX */
-	ksym == SunXK_Compose ||
-#endif /* 0 XXX */
 	(keyModifiers & LockMask)))
 	xE->u.u.type = KeyRelease;
 
-#if 0 /* XXX */
-    if (pPriv->type == KB_SUN4) {
-	if (ksym == XK_Num_Lock) {
-	    ModLight (device, xE->u.u.type == KeyPress, XLED_NUM_LOCK);
-	} else if (ksym == XK_Scroll_Lock) {
-	    ModLight (device, xE->u.u.type == KeyPress, XLED_SCROLL_LOCK);
-	} else if (ksym == SunXK_Compose) {
-	    ModLight (device, xE->u.u.type == KeyPress, XLED_COMPOSE);
-	    if (xE->u.u.type == KeyPress) composeCount = 2;
-	    else composeCount = 0;
-	} else if (keyModifiers & LockMask) {
-	    ModLight (device, xE->u.u.type == KeyPress, XLED_CAPS_LOCK);
-	}
-	if (xE->u.u.type == KeyRelease) {
-	    if (composeCount > 0 && --composeCount == 0) {
-		pseudoKey(device, FALSE,
-		    LookupKeyCode(SunXK_Compose, &device->key->curKeySyms));
-		ModLight (device, FALSE, XLED_COMPOSE);
-	    }
-	}
-    }
-
-    if ((xE->u.u.type == KeyPress) && (keyModifiers == 0)) {
-	/* initialize new AutoRepeater event & mark AutoRepeater on */
-	autoRepeatEvent = *xE;
-	autoRepeatFirst = TRUE;
-	autoRepeatKeyDown++;
-	autoRepeatLastKeyDownTv = fe->time;
-    }
-#endif /* XXX */
     return FALSE;
 }
 
@@ -720,21 +495,6 @@ void alphaKbdEnqueueEvent (device, fe)
 	    keycode = (fe->value & 0x7f) + MIN_KEYCODE;
 
     keyModifiers = device->key->modifierMap[keycode];
-#if 0 /* XXX */
-#ifdef XKB
-    if (noXkbExtension) {
-#endif
-    if (autoRepeatKeyDown && (keyModifiers == 0) &&
-	((fe->type == WSCONS_EVENT_KEY_DOWN) || (keycode == autoRepeatEvent.u.u.detail))) {
-	/*
-	 * Kill AutoRepeater on any real non-modifier key down, or auto key up
-	 */
-	autoRepeatKeyDown = 0;
-    }
-#ifdef XKB
-    }
-#endif
-#endif /* 0 XXX */
     /*
      * For lk201, we need to keep track of which keys are down so we can
      * process "all keys up" events.
@@ -768,151 +528,8 @@ void alphaKbdEnqueueEvent (device, fe)
     xE.u.keyButtonPointer.time = TSTOMILLI(fe->time);
     xE.u.u.type = ((fe->type == WSCONS_EVENT_KEY_UP) ? KeyRelease : KeyPress);
     xE.u.u.detail = keycode;
-#if 0 /* XXX */
-#ifdef XKB
-    if (noXkbExtension) {
-#endif
-    if (DoSpecialKeys(device, &xE, fe))
-	return;
-#ifdef XKB
-    }
-#endif /* ! XKB */
-#else /* ! 0 XXX */
-#endif /* 0 XXX */
     mieqEnqueue (&xE);
 }
-
-#if 0 /* XXX */
-void sunEnqueueAutoRepeat ()
-{
-    int	delta;
-    int	i, mask;
-    KeybdCtrl* ctrl = &((DeviceIntPtr)LookupKeyboardDevice())->kbdfeed->ctrl;
-
-    if (ctrl->autoRepeat != AutoRepeatModeOn) {
-	autoRepeatKeyDown = 0;
-	return;
-    }
-    i=(autoRepeatEvent.u.u.detail >> 3);
-    mask=(1 << (autoRepeatEvent.u.u.detail & 7));
-    if (!(ctrl->autoRepeats[i] & mask)) {
-	autoRepeatKeyDown = 0;
-	return;
-    }
-
-    /*
-     * Generate auto repeat event.	XXX one for now.
-     * Update time & pointer location of saved KeyPress event.
-     */
-
-    delta = TVTOMILLI(autoRepeatDeltaTv);
-    autoRepeatFirst = FALSE;
-
-    /*
-     * Fake a key up event and a key down event
-     * for the last key pressed.
-     */
-    autoRepeatEvent.u.keyButtonPointer.time += delta;
-    autoRepeatEvent.u.u.type = KeyRelease;
-
-    /*
-     * hold off any more inputs while we get these safely queued up
-     * further SIGIO are 
-     */
-    localEnqueueEvent (&autoRepeatEvent);
-    autoRepeatEvent.u.u.type = KeyPress;
-    localEnqueueEvent (&autoRepeatEvent);
-
-    /* Update time of last key down */
-    tvplus(autoRepeatLastKeyDownTv, autoRepeatLastKeyDownTv, 
-		    autoRepeatDeltaTv);
-}
-
-/*-
- *-----------------------------------------------------------------------
- * sunChangeKbdTranslation
- *	Makes operating system calls to set keyboard translation 
- *	and direction on or off.
- *
- * Results:
- *	-1 if failure, else 0.
- *
- * Side Effects:
- * 	Changes kernel management of keyboard.
- *
- *-----------------------------------------------------------------------
- */
-#if NeedFunctionPrototypes
-int sunChangeKbdTranslation(
-    int fd,
-    Bool makeTranslated)
-
-#else
-int sunChangeKbdTranslation(fd, makeTranslated)
-    int fd;
-    Bool makeTranslated;
-#endif
-{   
-    int 	tmp;
-#ifndef i386 /* { */
-    sigset_t	hold_mask, old_mask;
-#else /* }{ */
-    int		old_mask;
-#endif /* } */
-    int		toread;
-    char	junk[8192];
-
-#ifndef i386 /* { */
-    (void) sigfillset(&hold_mask);
-    (void) sigprocmask(SIG_BLOCK, &hold_mask, &old_mask);
-#else /* }{ */
-    old_mask = sigblock (~0);
-#endif /* } */
-    sunKbdWait();
-    if (makeTranslated) {
-        /*
-         * Next set the keyboard into "direct" mode and turn on
-         * event translation. If either of these fails, we can't go
-         * on.
-         */
-	tmp = 1;
-	if (ioctl (fd, KIOCSDIRECT, &tmp) == -1) {
-	    Error ("Setting keyboard direct mode");
-	    return -1;
-	}
-	tmp = TR_UNTRANS_EVENT;
-	if (ioctl (fd, KIOCTRANS, &tmp) == -1) {
-	    Error ("Setting keyboard translation");
-	    ErrorF ("sunChangeKbdTranslation: kbdFd=%d\n", fd);
-	    return -1;
-	}
-    } else {
-        /*
-         * Next set the keyboard into "indirect" mode and turn off
-         * event translation.
-         */
-	tmp = 0;
-	(void)ioctl (fd, KIOCSDIRECT, &tmp);
-	tmp = TR_ASCII;
-	(void)ioctl (fd, KIOCTRANS, &tmp);
-    }
-    if (ioctl (fd, FIONREAD, &toread) != -1 && toread > 0) {
-	while (toread) {
-	    tmp = toread;
-	    if (toread > sizeof (junk))
-		tmp = sizeof (junk);
-	    (void) read (fd, junk, tmp);
-	    toread -= tmp;
-	}
-    }
-#ifndef i386 /* { */
-    (void) sigprocmask(SIG_SETMASK, &old_mask, (sigset_t *)NULL);
-#else /* }{ */
-    sigsetmask (old_mask);
-#endif /* } */
-    return 0;
-}
-#endif /* 0 XXX */
 
 /*ARGSUSED*/
 Bool LegalModifier(key, pDev)
@@ -921,60 +538,3 @@ Bool LegalModifier(key, pDev)
 {
     return TRUE;
 }
-
-#if 0 /* XXX */
-/*ARGSUSED*/
-void sunBlockHandler(nscreen, pbdata, pptv, pReadmask)
-    int nscreen;
-    pointer pbdata;
-    struct timeval **pptv;
-    pointer pReadmask;
-{
-    KeybdCtrl* ctrl = &((DeviceIntPtr)LookupKeyboardDevice())->kbdfeed->ctrl;
-    static struct timeval artv = { 0, 0 };	/* autorepeat timeval */
-
-    if (!autoRepeatKeyDown)
-	return;
-
-    if (ctrl->autoRepeat != AutoRepeatModeOn)
-	return;
-
-    if (autoRepeatFirst == TRUE)
-	artv.tv_usec = sunAutoRepeatInitiate;
-    else
-	artv.tv_usec = sunAutoRepeatDelay;
-    *pptv = &artv;
-
-}
-
-/*ARGSUSED*/
-void sunWakeupHandler(nscreen, pbdata, err, pReadmask)
-    int nscreen;
-    pointer pbdata;
-    unsigned long err;
-    pointer pReadmask;
-{
-    KeybdCtrl* ctrl = &((DeviceIntPtr)LookupKeyboardDevice())->kbdfeed->ctrl;
-    struct timeval tv;
-
-    if (ctrl->autoRepeat != AutoRepeatModeOn)
-	return;
-
-    if (autoRepeatKeyDown) {
-	X_GETTIMEOFDAY(&tv);
-	tvminus(autoRepeatDeltaTv, tv, autoRepeatLastKeyDownTv);
-	if (autoRepeatDeltaTv.tv_sec > 0 ||
-			(!autoRepeatFirst && autoRepeatDeltaTv.tv_usec >
-				sunAutoRepeatDelay) ||
-			(autoRepeatDeltaTv.tv_usec >
-				sunAutoRepeatInitiate))
-		autoRepeatReady++;
-    }
-    
-    if (autoRepeatReady)
-    {
-	sunEnqueueAutoRepeat ();
-	autoRepeatReady = 0;
-    }
-}
-#endif /* 0 XXX */

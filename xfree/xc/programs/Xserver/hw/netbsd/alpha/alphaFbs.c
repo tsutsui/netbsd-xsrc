@@ -211,20 +211,6 @@ Bool alphaScreenInit (pScreen)
 #ifdef XKB
     if (noXkbExtension) {
 #endif
-#if 0 /* XXX */
-    /*
-     *	Block/Unblock handlers
-     */
-    if (alphaAutoRepeatHandlersInstalled == FALSE) {
-	autoRepeatScreen = pScreen;
-	alphaAutoRepeatHandlersInstalled = TRUE;
-    }
-
-    if (pScreen == autoRepeatScreen) {
-        pScreen->BlockHandler = alphaBlockHandler;
-        pScreen->WakeupHandler = alphaWakeupHandler;
-    }
-#endif /* 0 XXX */
 #ifdef XKB
     }
 #endif

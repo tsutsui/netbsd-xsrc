@@ -40,24 +40,7 @@ extern Bool alphaSFBInit(
 #define SFBI NULL
 #endif /* } */
 
-#if 0 /* XXX */
-extern KeySymsRec sunKeySyms[];
-extern SunModmapRec *sunModMaps[];
-extern int sunMaxLayout;
-extern KeySym* sunType4KeyMaps[];
-extern SunModmapRec* sunType4ModMaps[];
-#endif
-
 static Bool	alphaDevsInited = FALSE;
-
-#if 0
-Bool sunAutoRepeatHandlersInstalled;	/* FALSE each time InitOutput called */
-Bool sunSwapLkeys = FALSE;
-Bool sunFlipPixels = FALSE;
-Bool sunFbInfo = FALSE;
-Bool sunCG4Frob = FALSE;
-Bool sunNoGX = FALSE;
-#endif
 
 alphaKbdPrivRec alphaKbdPriv = {
     -1,		/* fd */
@@ -324,12 +307,6 @@ void InitOutput(pScreenInfo, argc, argv)
     pScreenInfo->numPixmapFormats = NUMFORMATS;
     for (i=0; i< NUMFORMATS; i++)
         pScreenInfo->formats[i] = formats[i];
-#if 0 /* XXX */
-#ifdef XKB
-    if (noXkbExtension)
-#endif
-    sunAutoRepeatHandlersInstalled = FALSE;
-#endif
     if (!alphaDevsInited) {
 	/* first time ever */
 	for (scr = 0; scr < MAXSCREENS; scr++)

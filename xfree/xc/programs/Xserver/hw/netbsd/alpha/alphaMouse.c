@@ -144,18 +144,6 @@ int alphaMouseProc (device, what)
 	    break;
 
 	case DEVICE_ON:
-#if 0		/* XXX -- deal with this rcd */
-	    if (ioctl (alphaPtrPriv.fd, VUIDGFORMAT, &oformat) == -1) {
-		Error ("alphaMouseProc ioctl VUIDGFORMAT");
-		return !Success;
-	    }
-	    format = VUID_FIRM_EVENT;
-	    if (ioctl (alphaPtrPriv.fd, VUIDSFORMAT, &format) == -1) {
-		Error ("alphaMouseProc ioctl VUIDSFORMAT");
-		return !Success;
-	    }
-#endif
-
 #ifdef WSMOUSEIO_SETVERSION
 	    {
 		int version = WSMOUSE_EVENT_VERSION;
@@ -166,18 +154,10 @@ int alphaMouseProc (device, what)
 	    }
 #endif
 
-#if 0
-	    alphaPtrPriv.bmask = 0;
-	    AddEnabledDevice (alphaPtrPriv.fd);
-#endif
 	    pMouse->on = TRUE;
 	    break;
 
 	case DEVICE_CLOSE:
-#if 0		/* XXX -- deal with this rcd */
-	    if (ioctl (alphaPtrPriv.fd, VUIDSFORMAT, &oformat) == -1)
-		Error ("alphaMouseProc ioctl VUIDSFORMAT");
-#endif
 	    break;
 
 	case DEVICE_OFF:

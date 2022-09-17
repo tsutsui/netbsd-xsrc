@@ -160,12 +160,6 @@ void AbortDDX(void)
     DevicePtr	devPtr;
 
     (void) OsSignal(SIGIO, SIG_IGN);
-#if 0 /* XXX */
-    devPtr = LookupKeyboardDevice();
-    if (devPtr)
-	(void) sunChangeKbdTranslation(((sunKbdPrivPtr)(devPtr->devicePrivate))->fd, FALSE);
-    sunNonBlockConsoleOff();
-#endif
     for (i = 0; i < screenInfo.numScreens; i++)
     {
 	pScreen = screenInfo.screens[i];
@@ -190,28 +184,6 @@ ddxProcessArgument(int argc, char *argv[], int i)
 	alphaTgaAccelerate = 0;
 	return 1;
     }
-#if 0 /* XXX */
-#ifndef XKB
-    if (strcmp(argv[i], "-ar1") == 0) {	/* -ar1 int */
-	if (++i >= argc) UseMsg();
-	sunAutoRepeatInitiate = 1000 * (long)atoi(argv[i]);
-	if (sunAutoRepeatInitiate > 1000000)
-	    sunAutoRepeatInitiate =  999000;
-	return 2;
-    }
-    if (strcmp(argv[i], "-ar2") == 0) {	/* -ar2 int */
-	if (++i >= argc) UseMsg();
-	sunAutoRepeatDelay = 1000 * (long)atoi(argv[i]);
-	if (sunAutoRepeatDelay > 1000000)
-	    sunAutoRepeatDelay =  999000;
-	return 2;
-    }
-#endif
-    if (strcmp(argv[i], "-swapLkeys") == 0) {	/* -swapLkeys */
-	sunSwapLkeys = TRUE;
-	return 1;
-    }
-#endif /* 0 XXX */
     if (strcmp(argv[i], "-debug") == 0) {	/* -debug */
 	return 1;
     }
@@ -219,63 +191,14 @@ ddxProcessArgument(int argc, char *argv[], int i)
 	if (++i >= argc) UseMsg();
 	return 2;
     }
-#if 0 /* XXX */
-    if (strcmp(argv[i], "-mono") == 0) {	/* -mono */
-	return 1;
-    }
-#endif
     if (strcmp(argv[i], "-zaphod") == 0) {	/* -zaphod */
 	alphaActiveZaphod = FALSE;
 	return 1;
     }
-#if 0 /* XXX */
-    if (strcmp(argv[i], "-flipPixels") == 0) {	/* -flipPixels */
-	sunFlipPixels = TRUE;
-	return 1;
-    }
-    if (strcmp(argv[i], "-fbinfo") == 0) {	/* -fbinfo */
-	sunFbInfo = TRUE;
-	return 1;
-    }
-    if (strcmp(argv[i], "-kbd") == 0) {	/* -kbd */
-	if (++i >= argc) UseMsg();
-	return 2;
-    }
-    if (strcmp(argv[i], "-protect") == 0) {	/* -protect */
-	if (++i >= argc) UseMsg();
-	return 2;
-    }
-    if (strcmp(argv[i], "-cg4frob") == 0) {
-	sunCG4Frob = TRUE;
-	return 1;
-    }
-    if (strcmp(argv[i], "-noGX") == 0) {
-	sunNoGX = TRUE;
-	return 1;
-    }
-#endif /* 0 XXX */
     return 0;
 }
 
 void
 ddxUseMsg(void)
 {
-#if 0 /* XXX */
-#ifndef XKB
-    ErrorF("-ar1 int            set autorepeat initiate time\n");
-    ErrorF("-ar2 int            set autorepeat interval time\n");
-#endif
-    ErrorF("-swapLkeys          swap keysyms on L1..L10\n");
-#endif /* 0 XXX */
-    ErrorF("-debug              disable non-blocking console mode\n");
-    ErrorF("-dev fn[:fn][:fn]   name of device[s] to open\n");
-#if 0 /* XXX */
-    ErrorF("-mono               force monochrome-only screen\n");
-    ErrorF("-zaphod             disable active Zaphod mode\n");
-    ErrorF("-fbinfo             tell more about the found frame buffer(s)\n");
-#ifdef UNDOCUMENTED
-    ErrorF("-cg4frob            don't use the mono plane of the cgfour\n");
-    ErrorF("-noGX               treat the GX as a dumb frame buffer\n");
-#endif
-#endif /* 0 XXX */
 }
