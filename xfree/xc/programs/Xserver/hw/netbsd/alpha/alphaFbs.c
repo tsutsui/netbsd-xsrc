@@ -154,9 +154,9 @@ Bool alphaSaveScreen (
 }
 
 Bool
-alphaCloseScreen (i, pScreen)
-    int		i;
-    ScreenPtr	pScreen;
+alphaCloseScreen (
+    int		i,
+    ScreenPtr	pScreen)
 {
     SetupScreen(pScreen);
     Bool    ret;
@@ -200,10 +200,10 @@ Bool alphaInitCommon (
     int		scrn,
     ScreenPtr	pScrn,
     off_t	offset,
-    Bool	(*init1)(),
-    void	(*init2)(),
-    Bool	(*cr_cm)(),
-    Bool	(*save)(),
+    Bool	(*init1)(ScreenPtr, void *, int, int, int, int, int, int),
+    void	(*init2)(ScreenPtr),
+    Bool	(*cr_cm)(ScreenPtr),
+    Bool	(*save)(ScreenPtr, int),
     int		fb_off)
 {
     unsigned char*	fb = alphaFbs[scrn].fb;

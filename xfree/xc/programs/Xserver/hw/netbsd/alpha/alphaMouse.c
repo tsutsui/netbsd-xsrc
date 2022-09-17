@@ -58,9 +58,9 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 Bool alphaActiveZaphod = TRUE;
 
-static Bool alphaCursorOffScreen();
-static void alphaCrossScreen();
-static void alphaWarpCursor();
+static Bool alphaCursorOffScreen(ScreenPtr *, int *, int *);
+static void alphaCrossScreen(ScreenPtr, Bool);
+static void alphaWarpCursor(ScreenPtr, int, int);
 
 miPointerScreenFuncRec alphaPointerScreenFuncs = {
     alphaCursorOffScreen,
@@ -85,9 +85,7 @@ miPointerScreenFuncRec alphaPointerScreenFuncs = {
  */
 /*ARGSUSED*/
 static 
-void alphaMouseCtrl (
-    DeviceIntPtr    device,
-    PtrCtrl*	    ctrl)
+void alphaMouseCtrl (DeviceIntPtr device, PtrCtrl* ctrl)
 {
 }
 
@@ -103,9 +101,7 @@ void alphaMouseCtrl (
  *
  *-----------------------------------------------------------------------
  */
-int alphaMouseProc (
-    DeviceIntPtr  device,
-    int	    	  what)
+int alphaMouseProc (DeviceIntPtr device, int what)
 {
     DevicePtr	  pMouse = (DevicePtr) device;
     int	    	  format;
@@ -173,10 +169,7 @@ int alphaMouseProc (
  *-----------------------------------------------------------------------
  */
 
-struct wscons_event* alphaMouseGetEvents (
-    int		fd,
-    int*	pNumEvents,
-    Bool*	pAgain)
+struct wscons_event* alphaMouseGetEvents (int fd, int* pNumEvents, Bool* pAgain)
 {
     int	    	  nBytes;	    /* number of bytes of events available. */
     static struct wscons_event	evBuf[MAXEVENTS];   /* Buffer for wscons_events */
@@ -211,9 +204,7 @@ struct wscons_event* alphaMouseGetEvents (
  *-----------------------------------------------------------------------
  */
 static short
-MouseAccelerate (device, delta)
-    DeviceIntPtr  device;
-    int	    	  delta;
+MouseAccelerate (DeviceIntPtr device, int delta)
 {
     int  sgn = sign(delta);
     PtrCtrl *pCtrl;
@@ -247,9 +238,7 @@ MouseAccelerate (device, delta)
  *-----------------------------------------------------------------------
  */
 
-void alphaMouseEnqueueEvent (
-    DeviceIntPtr  device,
-    struct wscons_event *fe)
+void alphaMouseEnqueueEvent (DeviceIntPtr device, struct wscons_event *fe)
 {
     xEvent		xE;
     alphaPtrPrivPtr	pPriv;	/* Private data for pointer */
@@ -323,9 +312,7 @@ void alphaMouseEnqueueEvent (
 
 /*ARGSUSED*/
 static Bool
-alphaCursorOffScreen (pScreen, x, y)
-    ScreenPtr	*pScreen;
-    int		*x, *y;
+alphaCursorOffScreen (ScreenPtr *pScreen, int *x, int *y)
 {
     int	    index, ret = FALSE;
     extern Bool PointerConfinedToScreen();
@@ -355,18 +342,14 @@ alphaCursorOffScreen (pScreen, x, y)
 }
 
 static void
-alphaCrossScreen (pScreen, entering)
-    ScreenPtr	pScreen;
-    Bool	entering;
+alphaCrossScreen (ScreenPtr pScreen, Bool entering)
 {
     if (alphaFbs[pScreen->myNum].EnterLeave)
 	(*alphaFbs[pScreen->myNum].EnterLeave) (pScreen, entering ? 0 : 1);
 }
 
 static void
-alphaWarpCursor (pScreen, x, y)
-    ScreenPtr	pScreen;
-    int		x, y;
+alphaWarpCursor (ScreenPtr pScreen, int x, int y)
 {
     sigset_t newsigmask;
 

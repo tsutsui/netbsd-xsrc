@@ -51,9 +51,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 extern KeySymsRec alphaKeySyms[];
 extern AlphaModmapRec *alphaModMaps[];
 
-static void SetLights (ctrl, fd)
-    KeybdCtrl*	ctrl;
-    int fd;
+static void SetLights (KeybdCtrl* ctrl, int fd)
 {
     /*
      * XXX The above ought to work, except that we don't initialize
@@ -70,10 +68,7 @@ static void SetLights (ctrl, fd)
 }
 
 
-static void ModLight (device, on, led)
-    DeviceIntPtr device;
-    Bool	on;
-    int		led;
+static void ModLight (DeviceIntPtr device, Bool on, int led)
 {
     KeybdCtrl*	ctrl = &device->kbdfeed->ctrl;
     alphaKbdPrivPtr pPriv = (alphaKbdPrivPtr) device->public.devicePrivate;
@@ -103,11 +98,8 @@ static void ModLight (device, on, led)
  *-----------------------------------------------------------------------
  */
 
-static void alphaBell (
-    int		    percent,
-    DeviceIntPtr    device,
-    pointer	    ctrl,
-    int		    unused)
+static void alphaBell (int percent, DeviceIntPtr device, pointer ctrl,
+    int unused)
 {
     KeybdCtrl*      kctrl = (KeybdCtrl*) ctrl;
     alphaKbdPrivPtr   pPriv = (alphaKbdPrivPtr) device->public.devicePrivate;
@@ -133,9 +125,7 @@ static void alphaBell (
 #define XLED_SCROLL_LOCK 0x2
 #define XLED_CAPS_LOCK   0x8
 
-static KeyCode LookupKeyCode (keysym, keysymsrec)
-    KeySym keysym;
-    KeySymsPtr keysymsrec;
+static KeyCode LookupKeyCode (KeySym keysym, KeySymsPtr keysymsrec)
 {
     KeyCode i;
     int ii, index = 0;
@@ -146,10 +136,7 @@ static KeyCode LookupKeyCode (keysym, keysymsrec)
 		return i;
 }
 
-static void pseudoKey(device, down, keycode)
-    DeviceIntPtr device;
-    Bool down;
-    KeyCode keycode;
+static void pseudoKey(DeviceIntPtr device, Bool down, KeyCode keycode)
 {
     int bit;
     CARD8 modifiers;
@@ -188,10 +175,7 @@ static void pseudoKey(device, down, keycode)
     }
 }
 
-static void DoLEDs(device, ctrl, pPriv)
-    DeviceIntPtr    device;	    /* Keyboard to alter */
-    KeybdCtrl* ctrl;
-    alphaKbdPrivPtr pPriv; 
+static void DoLEDs(DeviceIntPtr device,	KeybdCtrl* ctrl, alphaKbdPrivPtr pPriv)
 {
 #ifdef XKB
     if (noXkbExtension) {
@@ -240,9 +224,7 @@ static void DoLEDs(device, ctrl, pPriv)
  *-----------------------------------------------------------------------
  */
 
-static void alphaKbdCtrl (
-    DeviceIntPtr    device,
-    KeybdCtrl*	    ctrl)
+static void alphaKbdCtrl (DeviceIntPtr device, KeybdCtrl* ctrl)
 {
     alphaKbdPrivPtr pPriv = (alphaKbdPrivPtr) device->public.devicePrivate;
 
@@ -265,9 +247,7 @@ static void alphaKbdCtrl (
  *-----------------------------------------------------------------------
  */
 
-int alphaKbdProc (
-    DeviceIntPtr  device,
-    int	    	  what)
+int alphaKbdProc (DeviceIntPtr device, int what)
 {
     int i;
     DevicePtr pKeyboard = (DevicePtr) device;
@@ -371,10 +351,7 @@ int alphaKbdProc (
  *-----------------------------------------------------------------------
  */
 
-struct wscons_event* alphaKbdGetEvents (
-    int		fd,
-    int*	pNumEvents,
-    Bool*	pAgain)
+struct wscons_event* alphaKbdGetEvents (int fd, int* pNumEvents, Bool* pAgain)
 {
     int	    	  nBytes;	    /* number of bytes of events available. */
     static struct wscons_event	evBuf[MAXEVENTS];   /* Buffer for wscons_events */
@@ -403,10 +380,8 @@ struct wscons_event* alphaKbdGetEvents (
 static xEvent	autoRepeatEvent;
 static int	composeCount;
 
-static Bool DoSpecialKeys(device, xE, fe)
-    DeviceIntPtr  device;
-    xEvent*       xE;
-    struct wscons_event   *fe;
+static Bool DoSpecialKeys(DeviceIntPtr device, xEvent* xE,
+    struct wscons_event *fe)
 {
     int	shift_index, map_index, bit;
     KeySym ksym;
@@ -447,9 +422,7 @@ static Bool DoSpecialKeys(device, xE, fe)
     return FALSE;
 }
 
-void alphaKbdEnqueueEvent (
-    DeviceIntPtr  device,
-    struct wscons_event	  *fe)
+void alphaKbdEnqueueEvent (DeviceIntPtr device, struct wscons_event *fe)
 {
     xEvent		xE;
     BYTE		keycode;
@@ -499,9 +472,7 @@ void alphaKbdEnqueueEvent (
 }
 
 /*ARGSUSED*/
-Bool LegalModifier(key, pDev)
-    unsigned int key;
-    DevicePtr	pDev;
+Bool LegalModifier(unsigned int key, DevicePtr	pDev)
 {
     return TRUE;
 }

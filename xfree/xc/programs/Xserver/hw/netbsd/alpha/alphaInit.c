@@ -107,9 +107,10 @@ static PixmapFormatRec	formats32[] = {
  * Results:
  *	The fd of the framebuffer.
  */
-static int OpenFrameBuffer(device, screen)
-    char		*device;	/* e.g. "/dev/ttyE0" */
-    int			screen;    	/* what screen am I going to be */
+static int OpenFrameBuffer(
+    char		*device,	/* e.g. "/dev/ttyE0" */
+    int			screen    	/* what screen am I going to be */
+)
 {
     int			ret = TRUE;
 
@@ -166,17 +167,14 @@ static int OpenFrameBuffer(device, screen)
  *-----------------------------------------------------------------------
  */
 /*ARGSUSED*/
-static void SigIOHandler(sig)
-    int		sig;
+static void SigIOHandler(int sig)
 {
     int olderrno = errno;
     alphaEnqueueEvents ();
     errno = olderrno;
 }
 
-static char** GetDeviceList (argc, argv)
-    int		argc;
-    char	**argv;
+static char** GetDeviceList (int argc, char **argv)
 {
     int		i;
     char	*envList = NULL;
@@ -218,15 +216,11 @@ static char** GetDeviceList (argc, argv)
     return deviceList;
 }
 
-void OsVendorPreInit(
-    void
-)
+void OsVendorPreInit(void)
 {
 }
 
-void OsVendorInit(
-    void
-)
+void OsVendorInit(void)
 {
     static int inited;
     char *kbd = "/dev/wskbd0";
@@ -271,10 +265,7 @@ void OsVendorInit(
  *-----------------------------------------------------------------------
  */
 
-void InitOutput(pScreenInfo, argc, argv)
-    ScreenInfo 	  *pScreenInfo;
-    int     	  argc;
-    char    	  **argv;
+void InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 {
     int     	i, scr;
     int		nonBlockConsole = 0;
@@ -332,9 +323,7 @@ void InitOutput(pScreenInfo, argc, argv)
  *
  *-----------------------------------------------------------------------
  */
-void InitInput(argc, argv)
-    int     	  argc;
-    char    	  **argv;
+void InitInput(int argc, char **argv)
 {
     DeviceIntPtr	p, k;
     extern Bool mieqInit();
@@ -381,18 +370,16 @@ void OsVendorFatalError(void)
  *
  ***************************************************************/
 
-void DPMSSet (level)
-    int level;
+void DPMSSet (int level)
 {
 }
 
-int DPMSGet (level)
-    int* level;
+int DPMSGet (int* level)
 {
     return -1;
 }
 
-Bool DPMSSupported ()
+Bool DPMSSupported (void)
 {
     return FALSE;
 }

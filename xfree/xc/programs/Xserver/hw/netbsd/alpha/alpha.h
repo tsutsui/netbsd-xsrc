@@ -139,7 +139,7 @@ typedef struct {
 typedef struct {
     ColormapPtr	    installedMap;
     CloseScreenProcPtr CloseScreen;
-    void	    (*UpdateColormap)();
+    void	    (*UpdateColormap)(ScreenPtr, int, int, u_char *, u_char *, u_char *);
     alphaCursorRec    hardwareCursor;
     Bool	    hasHardwareCursor;
 } alphaScreenRec, *alphaScreenPtr;
@@ -162,7 +162,7 @@ typedef struct {
 #define tgaregs1 regs.tgaregs[1]
 #define tgaregs2 regs.tgaregs[2]
 #define tgaregs3 regs.tgaregs[3]
-    void	    (*EnterLeave)();/* screen switch */
+    void	    (*EnterLeave)(ScreenPtr, int);/* screen switch */
 } fbFd;
 
 typedef Bool (*alphaFbInitProc)(
@@ -198,9 +198,7 @@ extern void alphaDisableCursor(
     ScreenPtr /* pScreen */
 );
 
-extern void alphaEnqueueEvents(
-    void
-);
+extern void alphaEnqueueEvents(void);
 
 extern Bool alphaSaveScreen(
     ScreenPtr /* pScreen */,
@@ -230,10 +228,10 @@ extern Bool alphaInitCommon(
     int /* scrn */,
     ScreenPtr /* pScrn */,
     off_t /* offset */,
-    Bool (* /* init1 */)(),
-    void (* /* init2 */)(),
-    Bool (* /* cr_cm */)(),
-    Bool (* /* save */)(),
+    Bool (* /* init1 */)(ScreenPtr, void *, int, int, int, int, int, int),
+    void (* /* init2 */)(ScreenPtr),
+    Bool (* /* cr_cm */)(ScreenPtr),
+    Bool (* /* save */)(ScreenPtr, int),
     int /* fb_off */
 );
 
@@ -269,9 +267,7 @@ extern int alphaMouseProc(
     int /* what */
 );
 
-extern void alphaKbdWait(
-    void
-);
+extern void alphaKbdWait(void);
 
 /*-
  * TVTOMILLI(tv)
