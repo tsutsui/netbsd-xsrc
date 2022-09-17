@@ -343,9 +343,6 @@ int alphaKbdProc (DeviceIntPtr device, int what)
  *	The number of events contained in the array.
  *	A boolean as to whether more events might be available.
  *
- *      #ifdef USE_WSCONS implies that we use struct wscons_event, not
- *      Firm_event.
- *
  * Side Effects:
  *	None.
  *-----------------------------------------------------------------------

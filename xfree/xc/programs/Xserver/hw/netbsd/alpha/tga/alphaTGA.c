@@ -102,11 +102,7 @@ static Bool alphaTgaFinishScreenInit(
 static void CGUpdateColormap(ScreenPtr pScreen, int dex, int count,
     u_char *rmap, u_char *gmap, u_char *bmap)
 {
-#ifdef USE_WSCONS
     struct wsdisplay_cmap alphaCmap;
-#else
-    struct fbcmap alphaCmap;
-#endif
 
     alphaCmap.index = dex;
     alphaCmap.count = count;
@@ -114,17 +110,10 @@ static void CGUpdateColormap(ScreenPtr pScreen, int dex, int count,
     alphaCmap.green = &gmap[dex];
     alphaCmap.blue = &bmap[dex];
 
-#ifdef USE_WSCONS
     if (ioctl(alphaFbs[pScreen->myNum].fd, WSDISPLAYIO_PUTCMAP, &alphaCmap) < 0) {
 	Error("CGUpdateColormap");
 	FatalError( "CGUpdateColormap: FBIOPUTCMAP failed\n" );
     }
-#else
-    if (ioctl(alphaFbs[pScreen->myNum].fd, FBIOPUTCMAP, &alphaCmap) < 0) {
-	Error("CGUpdateColormap");
-	FatalError( "CGUpdateColormap: FBIOPUTCMAP failed\n" );
-    }
-#endif
 }
 
 void alphaTgaInstallColormap(ColormapPtr cmap)

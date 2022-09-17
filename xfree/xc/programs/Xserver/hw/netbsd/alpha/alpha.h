@@ -17,13 +17,6 @@
 #ifndef _ALPHA_H_ 
 #define _ALPHA_H_
 
-/* XXX -- I define USE_WSCONS here, although there should
- *  probably be a little logic as to if to define it.
- */
-#ifndef USE_WSCONS
-#define USE_WSCONS
-#endif
-
 /* X headers */
 #include "Xos.h"
 #undef index /* don't mangle silly Sun structure member names */

@@ -163,8 +163,6 @@ int alphaMouseProc (DeviceIntPtr device, int what)
  *	The number of events contained in the array.
  *	A boolean as to whether more events might be available.
  *
- *      #ifdef USE_WSCONS changes Firm_events to struct wscons_events.
- *
  * Side Effects:
  *	None.
  *-----------------------------------------------------------------------
@@ -259,8 +257,7 @@ void alphaMouseEnqueueEvent (DeviceIntPtr device, struct wscons_event *fe)
 	 * for a single state change. Should we get a button event which
 	 * reflects the current state of affairs, that event is discarded.
 	 *
-	 * Mouse buttons start at 1.
-	 * with USE_WSCONS mouse buttons start with 0.
+	 * Mouse buttons start with 0 on wscons.
 	 */
 	xE.u.u.detail = fe->value + 1;
 	bmask = 1 << xE.u.u.detail;
