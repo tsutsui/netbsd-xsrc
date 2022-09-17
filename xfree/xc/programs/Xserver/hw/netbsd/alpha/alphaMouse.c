@@ -347,6 +347,9 @@ void alphaMouseEnqueueEvent (device, fe)
 	 */
 	miPointerDeltaCursor (0,-MouseAccelerate(device,fe->value),time);
 	break;
+    case WSCONS_EVENT_MOUSE_DELTA_Z:
+	/* Ignore for now. */
+	break;
     case WSCONS_EVENT_MOUSE_ABSOLUTE_X:
 	miPointerPosition (&x, &y);
 	miPointerAbsoluteCursor (fe->value, y, time);
@@ -355,8 +358,10 @@ void alphaMouseEnqueueEvent (device, fe)
 	miPointerPosition (&x, &y);
 	miPointerAbsoluteCursor (x, fe->value, time);
 	break;
+    case WSCONS_EVENT_MOUSE_ABSOLUTE_Z:
+	break;
     default:
-	FatalError ("alphaMouseEnqueueEvent: unrecognized id\n");
+	LogMessage(X_ERROR, "%s: unrecognized id\n", __func__);
 	break;
     }
 }
