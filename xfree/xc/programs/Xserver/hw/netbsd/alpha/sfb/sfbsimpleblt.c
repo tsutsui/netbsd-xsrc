@@ -119,8 +119,18 @@ alphaSfbDoBitbltSimple(uint32_t *psrcBase, uint32_t *pdstBase,
 		alu = 0xf;
 		break;
 	}
+
+#if defined(__alpha__)
+#define mb()	__asm__ __volatile__("mb" : : : "memory")
+#elif defined(__mips__)
+#define mb()	\
+	asm volatile(".set push;.set mips2;nop;sync;.set pop":::"memory")
+#endif
+
 	regs[creg][SFB_REG_GMOR] = 0x0007;	/* Copy Mode */
+	mb();
 	regs[creg][SFB_REG_GOPR] = alu;
+	mb();
 
 	if (sy != dy)		/* Source and dest are not on a line, */
 		cxdir = 1;	/* so just forward copy */
@@ -190,15 +200,8 @@ alphaSfbDoBitbltSimple(uint32_t *psrcBase, uint32_t *pdstBase,
 		}
 	}
 
-#ifdef __alpha__
-#define mb    __asm__ __volatile__("mb" : : : "memory")
-#else
-#ifdef __mips__
-#define mb    asm volatile(".set push;.set mips2;nop;sync;.set pop":::"memory")
-#endif
-#endif
-	mb;
 	regs[creg][SFB_REG_GPSR] = pshift;
+	mb();
 	while (h--) {
 	    volatile uint8_t *Bsrc;
 	    volatile uint8_t *Bdst;
@@ -207,10 +210,9 @@ alphaSfbDoBitbltSimple(uint32_t *psrcBase, uint32_t *pdstBase,
 	    Bsrc = (volatile uint8_t *)(psrcBase) + psrcLine + sdirm;
 	    Bdst = (volatile uint8_t *)(pdstBase) + pdstLine + ddirm;
 
-	    mb;
 	    x = 0;
-	    *((volatile uint32_t *)Bsrc + x) = ~0; mb;
-	    *((volatile uint32_t *)Bdst + x) = dpremask; mb;
+	    *((volatile uint32_t *)Bsrc + x) = ~0; mb();
+	    *((volatile uint32_t *)Bdst + x) = dpremask; mb();
 	    x += cxdir*32;
 	    xloop -= 32;
 #if 0
@@ -222,26 +224,27 @@ alphaSfbDoBitbltSimple(uint32_t *psrcBase, uint32_t *pdstBase,
 	    }
 #else
 	    for (; xloop >= 32; x += cxdir * 32, xloop -= 32) {
-		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
-		*((volatile uint32_t *)(Bdst + x)) = ~0; mb;
+		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb();
+		*((volatile uint32_t *)(Bdst + x)) = ~0; mb();
 	    }
 #endif
 	    if (xloop >= 32) {
-		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
-		*((volatile uint32_t *)(Bdst + x)) = ~0; mb;
+		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb();
+		*((volatile uint32_t *)(Bdst + x)) = ~0; mb();
 		x += cxdir * 32;
 		xloop -= 32;
 	    }
 	    if (xloop > 0) {
-		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb;
-		*((volatile uint32_t *)(Bdst + x)) = dpostmask; mb;
+		*((volatile uint32_t *)(Bsrc + x)) = ~0; mb();
+		*((volatile uint32_t *)(Bdst + x)) = dpostmask; mb();
 	    }
 	    psrcLine += widthSrc * 4;
 	    pdstLine += widthDst * 4;
 	}
-	mb;
 	regs[creg][SFB_REG_GPSR] = 0;
+	mb();
 	regs[creg][SFB_REG_GMOR] = 0x0000;	/* Simple Mode */
+	mb();
 	regs[creg][SFB_REG_GOPR] = 0x0003;	/* GXcopy */
 #undef mb
 }
