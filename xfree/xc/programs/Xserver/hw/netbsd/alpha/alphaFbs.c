@@ -182,12 +182,6 @@ Bool alphaScreenInit (
     pPrivate->CloseScreen = pScreen->CloseScreen;
     pScreen->CloseScreen = alphaCloseScreen;
     pScreen->SaveScreen = alphaSaveScreen;
-#ifdef XKB
-    if (noXkbExtension) {
-#endif
-#ifdef XKB
-    }
-#endif
     if (!alphaCursorInitialize (pScreen))
 	miDCInitialize (pScreen, &alphaPointerScreenFuncs);
     return TRUE;
