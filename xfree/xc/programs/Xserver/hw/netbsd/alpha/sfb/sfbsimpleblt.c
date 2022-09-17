@@ -156,8 +156,8 @@ alphaSfbDoBitbltSimple(
 	 * up front.
 	 */
 	dpostmask  = 0;
-	sdirm = sx & ~0x7;
-	ddirm = dx & ~0x7;
+	sdirm = sx & ~0x1f;
+	ddirm = dx & ~0x1f;
 	dx_align = dx - ddirm;
 	pshift = dx_align - (sx - sdirm);
 	if ((cxdir*pshift < 0) || (cxdir == -1 && pshift == 0)) {
