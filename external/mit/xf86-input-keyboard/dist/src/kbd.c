@@ -310,6 +310,7 @@ KbdProc(DeviceIntPtr device, int what)
          pKbd->KbdGetMapping(pInfo, &keySyms, modMap);
 
          device->public.on = FALSE;
+#ifndef USE_WSKBD_GETMAP
          rmlvo.rules = xkb_rules;
          rmlvo.model = xkb_model;
          rmlvo.layout = xkb_layout;
@@ -324,6 +325,27 @@ KbdProc(DeviceIntPtr device, int what)
 
              return BadValue;
          }
+#else
+         rmlvo.rules = "base";
+         rmlvo.model = "empty";
+         rmlvo.layout = xkb_layout;
+         rmlvo.variant = xkb_variant;
+         rmlvo.options = xkb_options;
+
+         XkbSetRulesDflts(&rmlvo);
+         if (!InitKeyboardDeviceStruct(device, NULL, KbdBell, KbdCtrl))
+         {
+             xf86Msg(X_ERROR, "%s: Keyboard initialization failed. This "
+                     "could be a missing or incorrect setup of "
+                     "xkeyboard-config.\n", device->name);
+
+             return BadValue;
+         }
+         XkbApplyMappingChange(device, &keySyms,
+           keySyms.minKeyCode,
+           keySyms.maxKeyCode - keySyms.minKeyCode + 1,
+           modMap, serverClient);
+#endif /* USE_WSKBD_GETMAP */
 # ifdef XI_PROP_DEVICE_NODE
          {
              const char *device_node =
@@ -406,7 +428,9 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
   KbdDevPtr    pKbd = (KbdDevPtr) pInfo->private;
   DeviceIntPtr device = pInfo->dev;
   KeyClassRec  *keyc = device->key;
+#ifndef USE_WSKBD_GETMAP
   int state;
+#endif
 
 #ifdef DEBUG
   LogMessageVerbSigSafe(X_INFO, -1, "kbd driver rec scancode: 0x%x %s\n", scanCode, down ? "down" : "up");
@@ -426,6 +450,7 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
      }
   }
 
+#ifndef USE_WSKBD_GETMAP
   /*
    * PC keyboards generate separate key codes for
    * Alt+Print and Control+Pause but in the X keyboard model
@@ -439,6 +464,7 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
     scanCode = KEY_Print;
   else if (scanCode == KEY_Break)
     scanCode = KEY_Pause;
+#endif
 
   xf86PostKeyboardEvent(device, scanCode + MIN_KEYCODE, down);
 }
