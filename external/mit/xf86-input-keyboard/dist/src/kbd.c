@@ -310,22 +310,7 @@ KbdProc(DeviceIntPtr device, int what)
          pKbd->KbdGetMapping(pInfo, &keySyms, modMap);
 
          device->public.on = FALSE;
-#ifndef USE_WSKBD_GETMAP
-         rmlvo.rules = xkb_rules;
-         rmlvo.model = xkb_model;
-         rmlvo.layout = xkb_layout;
-         rmlvo.variant = xkb_variant;
-         rmlvo.options = xkb_options;
-
-         if (!InitKeyboardDeviceStruct(device, &rmlvo, KbdBell, KbdCtrl))
-         {
-             xf86Msg(X_ERROR, "%s: Keyboard initialization failed. This "
-                     "could be a missing or incorrect setup of "
-                     "xkeyboard-config.\n", device->name);
-
-             return BadValue;
-         }
-#else
+#ifdef USE_WSKBD_GETMAP
          rmlvo.rules = "base";
          rmlvo.model = "empty";
          rmlvo.layout = xkb_layout;
@@ -345,6 +330,21 @@ KbdProc(DeviceIntPtr device, int what)
            keySyms.minKeyCode,
            keySyms.maxKeyCode - keySyms.minKeyCode + 1,
            modMap, serverClient);
+#else
+         rmlvo.rules = xkb_rules;
+         rmlvo.model = xkb_model;
+         rmlvo.layout = xkb_layout;
+         rmlvo.variant = xkb_variant;
+         rmlvo.options = xkb_options;
+
+         if (!InitKeyboardDeviceStruct(device, &rmlvo, KbdBell, KbdCtrl))
+         {
+             xf86Msg(X_ERROR, "%s: Keyboard initialization failed. This "
+                     "could be a missing or incorrect setup of "
+                     "xkeyboard-config.\n", device->name);
+
+             return BadValue;
+         }
 #endif /* USE_WSKBD_GETMAP */
 # ifdef XI_PROP_DEVICE_NODE
          {
@@ -425,10 +425,12 @@ static void
 PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
 {
 
-  KbdDevPtr    pKbd = (KbdDevPtr) pInfo->private;
-  DeviceIntPtr device = pInfo->dev;
-  KeyClassRec  *keyc = device->key;
 #ifndef USE_WSKBD_GETMAP
+  KbdDevPtr    pKbd = (KbdDevPtr) pInfo->private;
+#endif
+  DeviceIntPtr device = pInfo->dev;
+#ifndef USE_WSKBD_GETMAP
+  KeyClassRec  *keyc = device->key;
   int state;
 #endif
 
@@ -436,6 +438,7 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
   LogMessageVerbSigSafe(X_INFO, -1, "kbd driver rec scancode: 0x%x %s\n", scanCode, down ? "down" : "up");
 #endif
 
+#ifndef USE_WSKBD_GETMAP
   /*
    * First do some special scancode remapping ...
    */
@@ -450,7 +453,6 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
      }
   }
 
-#ifndef USE_WSKBD_GETMAP
   /*
    * PC keyboards generate separate key codes for
    * Alt+Print and Control+Pause but in the X keyboard model
