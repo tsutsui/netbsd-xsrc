@@ -311,6 +311,7 @@ KbdProc(DeviceIntPtr device, int what)
 
          device->public.on = FALSE;
 #ifdef USE_WSKBD_GETMAP
+         /* Use keySyms from device dependent ioctl rather than complex XKB */
          rmlvo.rules = "base";
          rmlvo.model = "empty";
          rmlvo.layout = xkb_layout;
@@ -326,6 +327,7 @@ KbdProc(DeviceIntPtr device, int what)
 
              return BadValue;
          }
+         /* Apply device dependent keySyms over "empty" XKB settings */
          XkbApplyMappingChange(device, &keySyms,
            keySyms.minKeyCode,
            keySyms.maxKeyCode - keySyms.minKeyCode + 1,
@@ -438,7 +440,7 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
   LogMessageVerbSigSafe(X_INFO, -1, "kbd driver rec scancode: 0x%x %s\n", scanCode, down ? "down" : "up");
 #endif
 
-#ifndef USE_WSKBD_GETMAP
+#ifndef USE_WSKBD_GETMAP /* this convertion is necessary only for pc105 XKB */
   /*
    * First do some special scancode remapping ...
    */
