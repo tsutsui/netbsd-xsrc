@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $NetBSD: ngle_accel.c,v 1.3 2024/10/22 08:46:07 macallan Exp $ */
+/* $NetBSD: ngle_accel.c,v 1.4 2024/10/25 07:15:41 macallan Exp $ */
 
 #include <sys/types.h>
 #include <dev/ic/stireg.h>
@@ -116,12 +116,13 @@ NGLEPrepareCopy_EG
 	ENTER;
 
 	DBGMSG(X_ERROR, "%s %d %d\n", __func__, srcoff, srcpitch);
-	fPtr->offset = srcoff / srcpitch;
+	fPtr->offset = srcoff >> 11;
 	NGLEWaitMarker(pDstPixmap->drawable.pScreen, 0);
 	/* XXX HCRX needs ifferent values here */
 	NGLEWrite4(fPtr, NGLE_REG_10,
 	    BA(IndexedDcd, Otc04, Ots08, AddrLong, 0, BINapp0I, 0));
-	NGLEWrite4(fPtr, NGLE_REG_14, ((alu << 8) & 0xf00) | 0x23000000);
+	NGLEWrite4(fPtr, NGLE_REG_14,
+	    IBOvals(RopSrc, 0, BitmapExtent08, 0, DataDynamic, MaskOtc, 0, 0));
 	NGLEWrite4(fPtr, NGLE_REG_13, planemask);
 
 	fPtr->hwmode = HW_BLIT;
@@ -151,11 +152,10 @@ NGLEPrepareCopy_HCRX
 	DBGMSG(X_ERROR, "%s %d %d\n", __func__, srcoff, srcpitch);
 	fPtr->offset = srcoff / srcpitch;
 	NGLEWaitMarker(pDstPixmap->drawable.pScreen, 0);
-	/* XXX HCRX needs ifferent values here */
 	NGLEWrite4(fPtr, NGLE_REG_10,
 	    BA(FractDcd, Otc24, Ots08, AddrLong, 0, BINapp0F8, 0));
-	NGLEWrite4(fPtr, NGLE_REG_14, IBOvals(RopSrc, 0, BitmapExtent32, 0, DataDynamic, MaskOtc,
-			0, 0));
+	NGLEWrite4(fPtr, NGLE_REG_14,
+	    IBOvals(RopSrc, 0, BitmapExtent32, 0, DataDynamic, MaskOtc, 0, 0));
 	NGLEWrite4(fPtr, NGLE_REG_13, planemask);
 
 	fPtr->hwmode = HW_BLIT;
@@ -215,8 +215,6 @@ NGLEPrepareSolid_EG(
 	/* bitmap op */
 	NGLEWrite4(fPtr, NGLE_REG_14, 
 	    IBOvals(alu, 0, BitmapExtent08, 0, DataDynamic, MaskOtc, 1, 0));
-
-	/* XXX HCRX needs different values here */
 	/* dst bitmap access */
 	NGLEWrite4(fPtr, NGLE_REG_11,
 	    BA(IndexedDcd, Otc32, OtsIndirect, AddrLong, 0, BINapp0I, 0));
@@ -244,8 +242,6 @@ NGLEPrepareSolid_HCRX(
 	/* bitmap op */
 	NGLEWrite4(fPtr, NGLE_REG_14, 
 	    IBOvals(alu, 0, BitmapExtent32, 0, DataDynamic, MaskOtc, 1, 0));
-
-	/* XXX HCRX needs different values here */
 	/* dst bitmap access */
 	NGLEWrite4(fPtr, NGLE_REG_11,
 	    BA(FractDcd, Otc32, OtsIndirect, AddrLong, 0, BINapp0F8, 0));
