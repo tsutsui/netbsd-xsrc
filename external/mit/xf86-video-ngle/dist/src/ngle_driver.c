@@ -1,4 +1,4 @@
-/* $NetBSD: ngle_driver.c,v 1.4 2024/10/22 08:46:07 macallan Exp $ */
+/* $NetBSD: ngle_driver.c,v 1.5 2024/10/25 09:02:25 macallan Exp $ */
 /*
  * Copyright (c) 2024 Michael Lorenz
  * All rights reserved.
@@ -545,9 +545,16 @@ NGLEScreenInit(SCREEN_INIT_ARGS_DECL)
 
 	/* mi layer */
 	miClearVisualTypes();
-	if (!miSetVisualTypes(pScrn->depth, TrueColorMask,
-			      pScrn->rgbBits, TrueColor))
-		return FALSE;
+	if (pScrn->bitsPerPixel > 8) {
+		if (!miSetVisualTypes(pScrn->depth, TrueColorMask,
+				      pScrn->rgbBits, TrueColor))
+			return FALSE;
+	} else {
+		if (!miSetVisualTypes(pScrn->depth,
+				      miGetDefaultVisualMask(pScrn->depth),
+				      pScrn->rgbBits, pScrn->defaultVisual))
+			return FALSE;
+	}
 
 	if (!miSetPixmapDepths())
 		return FALSE;
