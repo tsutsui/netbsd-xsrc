@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $NetBSD: ngle_accel.c,v 1.4 2024/10/25 07:15:41 macallan Exp $ */
+/* $NetBSD: ngle_accel.c,v 1.5 2024/10/25 09:20:37 macallan Exp $ */
 
 #include <sys/types.h>
 #include <dev/ic/stireg.h>
@@ -118,11 +118,10 @@ NGLEPrepareCopy_EG
 	DBGMSG(X_ERROR, "%s %d %d\n", __func__, srcoff, srcpitch);
 	fPtr->offset = srcoff >> 11;
 	NGLEWaitMarker(pDstPixmap->drawable.pScreen, 0);
-	/* XXX HCRX needs ifferent values here */
 	NGLEWrite4(fPtr, NGLE_REG_10,
 	    BA(IndexedDcd, Otc04, Ots08, AddrLong, 0, BINapp0I, 0));
 	NGLEWrite4(fPtr, NGLE_REG_14,
-	    IBOvals(RopSrc, 0, BitmapExtent08, 0, DataDynamic, MaskOtc, 0, 0));
+	    IBOvals(RopSrc, 0, BitmapExtent08, 1, DataDynamic, MaskOtc, 0, 0));
 	NGLEWrite4(fPtr, NGLE_REG_13, planemask);
 
 	fPtr->hwmode = HW_BLIT;
@@ -270,7 +269,7 @@ NGLESolid(
 
 	ENTER;
 	
-	y1 += offset >> 11;
+	y1 += offset / pitch;
 
 	/*
 	 * XXX
@@ -391,7 +390,7 @@ NGLEInitAccel(ScreenPtr pScreen)
 			break;
 		default:
 			xf86Msg(X_ERROR,
-			    "unsupported dvice GID %08x\n", fPtr->gid);
+			    "unsupported device GID %08x\n", fPtr->gid);
 			return FALSE;
 	}
 	NGLEWaitMarker(pScreen, 0);
