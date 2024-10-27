@@ -1,4 +1,4 @@
-/* $NetBSD: ngle_cursor.c,v 1.1 2024/10/16 11:00:36 macallan Exp $ */
+/* $NetBSD: ngle_cursor.c,v 1.2 2024/10/27 11:09:37 macallan Exp $ */
 /*
  * Copyright (c) 2005 Michael Lorenz
  * All rights reserved.
@@ -65,6 +65,7 @@ NGLELoadCursorImage(ScrnInfoPtr pScrn, unsigned char *src)
 	pNGLE->cursor.mask = src + pNGLE->maskoffset;
 	if(ioctl(pNGLE->fd, WSDISPLAYIO_SCURSOR, &pNGLE->cursor) == -1)
 		xf86Msg(X_ERROR, "NGLELoadCursorImage: %d\n", errno);
+	pNGLE->hwmode = -1;
 }
 
 void 
@@ -135,6 +136,7 @@ NGLESetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
 	pNGLE->cursor.cmap.count = 2;
 	if(ioctl(pNGLE->fd, WSDISPLAYIO_SCURSOR, &pNGLE->cursor) == -1)
 		xf86Msg(X_ERROR, "NGLESetCursorColors: %d\n", errno);
+	pNGLE->hwmode = -1;
 }
 
 Bool 

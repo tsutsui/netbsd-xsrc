@@ -1,4 +1,4 @@
-/* $NetBSD: ngle_driver.c,v 1.5 2024/10/25 09:02:25 macallan Exp $ */
+/* $NetBSD: ngle_driver.c,v 1.6 2024/10/27 11:09:37 macallan Exp $ */
 /*
  * Copyright (c) 2024 Michael Lorenz
  * All rights reserved.
@@ -746,6 +746,7 @@ NGLELoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
 		if (ioctl(fPtr->fd,WSDISPLAYIO_PUTCMAP, &cmap) == -1)
 			ErrorF("ioctl FBIOPUTCMAP: %s\n", strerror(errno));
 	}
+	fPtr->hwmode = -1;
 }
 
 static Bool
