@@ -1285,7 +1285,8 @@ DeviceFocusEvent(DeviceIntPtr dev, int type, int mode, int detail,
 	(wOtherInputMasks(pWin)->inputEvents[dev->id] & DeviceStateNotifyMask))
     {
 	int evcount = 1;
-	deviceStateNotify *ev, *sev;
+        deviceStateNotify sev[6 + (MAX_VALUATORS + 2)/3];
+        deviceStateNotify *ev;
 	deviceKeyStateNotify *kev;
 	deviceButtonStateNotify *bev;
 
@@ -1321,7 +1322,7 @@ DeviceFocusEvent(DeviceIntPtr dev, int type, int mode, int detail,
 	    }
 	}
 
-	sev = ev = (deviceStateNotify *) malloc(evcount * sizeof(xEvent));
+        ev = sev;
 	FixDeviceStateNotify(dev, ev, NULL, NULL, NULL, first);
 
 	if (b != NULL) {
@@ -1376,7 +1377,6 @@ DeviceFocusEvent(DeviceIntPtr dev, int type, int mode, int detail,
 
 	DeliverEventsToWindow(dev, pWin, (xEvent *) sev, evcount,
 				    DeviceStateNotifyMask, NullGrab);
-	free(sev);
     }
 }
 
