@@ -477,6 +477,19 @@ DisableDevice(DeviceIntPtr dev, BOOL sendevent)
                 return FALSE;
             }
         }
+
+        for (other = inputInfo.off_devices; other; other = other->next) {
+	    /*
+	     * XXXMRG, from newer GetMaster().  The GetMaster() with new
+	     * MASTER_ATTACHED avoids paired devices, and with this call
+	     * being !IsMaster() first, dev->u.master is the only answer
+	     * it can give.
+	     */
+            if (!IsMaster(other) && other->u.master == dev) {
+                AttachDevice(NULL, other, NULL);
+                flags[other->id] |= XISlaveDetached;
+            }
+        }
     }
 
     (void)(*dev->deviceProc)(dev, DEVICE_OFF);
@@ -999,6 +1012,11 @@ CloseDownDevices(void)
     for (dev = inputInfo.devices; dev; dev = dev->next)
     {
         if (!IsMaster(dev) && dev->u.master)
+            dev->u.master = NULL;
+    }
+
+    for (dev = inputInfo.off_devices; dev; dev = dev->next) {
+	if (!IsMaster(dev) && dev->u.master)
             dev->u.master = NULL;
     }
 
