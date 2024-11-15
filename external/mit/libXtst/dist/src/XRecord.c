@@ -452,10 +452,9 @@ XRecordGetContext(Display *dpy, XRecordContext context,
 	ret->client_info = client_inf;
         if (!client_inf || !client_inf_str)
         {
-	   free(client_inf);
 	   _XEatDataWords (dpy, rep.length);
 	   UnlockDisplay(dpy);
-	   XRecordFreeState(ret);
+	   XRecordFreeState(ret); /* frees ret->client_info, aka client_inf */
 	   SyncHandle();
 	   return 0;
         }
@@ -510,14 +509,14 @@ XRecordGetContext(Display *dpy, XRecordContext context,
 void
 XRecordFreeState(XRecordState *state)
 {
-    for (unsigned long i = 0; i < state->nclients; i++) {
-	if (state->client_info[i]->ranges) {
-	    if (state->client_info[i]->ranges[0])
-		Xfree(state->client_info[i]->ranges[0]);
-	    Xfree(state->client_info[i]->ranges);
-	}
-    }
     if (state->client_info) {
+	for (unsigned long i = 0; i < state->nclients; i++) {
+	    if (state->client_info[i]->ranges) {
+		if (state->client_info[i]->ranges[0])
+		    Xfree(state->client_info[i]->ranges[0]);
+		Xfree(state->client_info[i]->ranges);
+	    }
+	}
 	if (state->client_info[0])
 	    Xfree(state->client_info[0]);
 	Xfree(state->client_info);
@@ -746,6 +745,8 @@ parse_reply_call_callback(
 	 */
 	switch (rep->category) {
 	case XRecordFromServer:
+	    if (reply == NULL)
+		goto out;
 	    if (rep->elementHeader&XRecordFromServerTime) {
 		if (current_index + 4 > rep->length << 2)
 		    return Error;
@@ -771,6 +772,8 @@ parse_reply_call_callback(
 	    }
 	    break;
 	case XRecordFromClient:
+	    if (reply == NULL)
+		goto out;
 	    if (rep->elementHeader&XRecordFromClientTime) {
 		if (current_index + 4 > rep->length << 2)
 		    goto out;
@@ -805,6 +808,8 @@ parse_reply_call_callback(
 	    datum_bytes <<= 2;
 	    break;
 	case XRecordClientStarted:
+	    if (reply == NULL)
+		goto out;
 	    if (current_index + 8 > rep->length << 2)
 		goto out;
 	    EXTRACT_CARD16(rep->clientSwapped,
@@ -813,6 +818,8 @@ parse_reply_call_callback(
 	    break;
 	case XRecordClientDied:
 	    if (rep->elementHeader&XRecordFromClientSequence) {
+		if (reply == NULL)
+		    goto out;
 		if (current_index + 4 > rep->length << 2)
 		    goto out;
 		EXTRACT_CARD32(rep->clientSwapped,
