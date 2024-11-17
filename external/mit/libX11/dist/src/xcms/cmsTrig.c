@@ -72,7 +72,7 @@ _XcmsModuloF(
 #define XCMS_RADIANS(d)		((d) * XCMS_PI / 180.0)
 #define XCMS_DEGREES(r)		((r) * 180.0 / XCMS_PI)
 #ifdef __vax__
-#define XCMS_X6_UNDERFLOWS	(3.784659e-07)  /* X**6 almost underflows*/
+#define XCMS_X6_UNDERFLOWS	(3.784659e-07)	/* X**6 almost underflows*/
 #else
 #define XCMS_X6_UNDERFLOWS	(4.209340e-52)	/* X**6 almost underflows */
 #endif
