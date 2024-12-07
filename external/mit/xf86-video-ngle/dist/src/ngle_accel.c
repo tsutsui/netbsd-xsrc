@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $NetBSD: ngle_accel.c,v 1.5 2024/10/25 09:20:37 macallan Exp $ */
+/* $NetBSD: ngle_accel.c,v 1.6 2024/12/07 10:48:38 macallan Exp $ */
 
 #include <sys/types.h>
 #include <dev/ic/stireg.h>
@@ -40,34 +40,6 @@
 #define DBGMSG if (0) xf86Msg
 #define LEAVE
 #endif
-
-static inline void
-NGLEWrite4(NGLEPtr fPtr, int offset, uint32_t val)
-{
-	volatile uint32_t *ptr = (uint32_t *)((uint8_t *)fPtr->regs + offset);
-	*ptr = val;
-}
-
-static inline void
-NGLEWrite1(NGLEPtr fPtr, int offset, uint8_t val)
-{
-	volatile uint8_t *ptr = (uint8_t *)fPtr->regs + offset;
-	*ptr = val;
-}
-
-static inline uint32_t
-NGLERead4(NGLEPtr fPtr, int offset)
-{
-	volatile uint32_t *ptr = (uint32_t *)((uint8_t *)fPtr->regs + offset);
-	return *ptr;
-}
-
-static inline uint8_t
-NGLERead1(NGLEPtr fPtr, int offset)
-{
-	volatile uint8_t *ptr = (uint8_t *)fPtr->regs + offset;
-	return *ptr;
-}
 
 static void
 NGLEWaitMarker(ScreenPtr pScreen, int Marker)

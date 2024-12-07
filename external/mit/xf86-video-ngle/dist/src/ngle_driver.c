@@ -1,4 +1,4 @@
-/* $NetBSD: ngle_driver.c,v 1.6 2024/10/27 11:09:37 macallan Exp $ */
+/* $NetBSD: ngle_driver.c,v 1.7 2024/12/07 10:48:38 macallan Exp $ */
 /*
  * Copyright (c) 2024 Michael Lorenz
  * All rights reserved.
@@ -107,18 +107,19 @@ DriverRec NGLE = {
 static SymTabRec NGLEChipsets[] = {
 	{ STI_DD_EG, "Visualize EG" },
 	{ STI_DD_HCRX, "HCRX" },
+	{ STI_DD_SUMMIT, "Visualize FX 2/4/6"},
 	{ -1, NULL }
 };
 
 /* Supported options */
 typedef enum {
 	OPTION_HW_CURSOR,
-	OPTION_SW_CURSOR
+	OPTION_DEVICE
 } NGLEOpts;
 
 static const OptionInfoRec NGLEOptions[] = {
-	{ OPTION_SW_CURSOR, "SWcursor",	OPTV_BOOLEAN,	{0}, FALSE },
 	{ OPTION_HW_CURSOR, "HWcursor",	OPTV_BOOLEAN,	{0}, FALSE },
+	{ OPTION_DEVICE,    "Device",   OPTV_ANYSTR,    {0}, FALSE },
 	{ -1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
@@ -373,6 +374,7 @@ NGLEPreInit(ScrnInfoPtr pScrn, int flags)
 		case STI_DD_EG:
 			fPtr->buf = BINapp0I;
 			fPtr->fbacc = BA(IndexedDcd, Otc04, Ots08, AddrByte, 0, fPtr->buf, 0);
+			fPtr->reglen = 0x400000;
 			break;
 		case STI_DD_HCRX:
 			/* XXX BINovly if in 8 bit */
@@ -386,7 +388,11 @@ NGLEPreInit(ScrnInfoPtr pScrn, int flags)
 			 * fingers
 			 */
 			fPtr->fbi.fbi_fbsize += 8192;
-	break;
+			fPtr->reglen = 0x400000;
+			break;
+		case STI_DD_SUMMIT:
+			fPtr->reglen = 0x1000000;
+			break;
 	}
 	xf86Msg(X_ERROR, "gid %08x fb access %08x\n", fPtr->gid, fPtr->fbacc);		
 
@@ -470,12 +476,10 @@ NGLEPreInit(ScrnInfoPtr pScrn, int flags)
 	xf86SetDpi(pScrn, 0, 0);
 
 	from = X_DEFAULT;
-	fPtr->HWCursor = TRUE;
-	if (xf86GetOptValBool(fPtr->Options, OPTION_HW_CURSOR, &fPtr->HWCursor))
+	fPtr->HWCursor = FALSE;
+	if (xf86GetOptValBool(fPtr->Options, OPTION_HW_CURSOR, &fPtr->HWCursor)) {
 		from = X_CONFIG;
-	if (xf86ReturnOptValBool(fPtr->Options, OPTION_SW_CURSOR, FALSE)) {
-		from = X_CONFIG;
-		fPtr->HWCursor = FALSE;
+		fPtr->HWCursor = TRUE;
 	}
 	xf86DrvMsg(pScrn->scrnIndex, from, "Using %s cursor\n",
 		fPtr->HWCursor ? "HW" : "SW");
@@ -486,11 +490,6 @@ NGLEPreInit(ScrnInfoPtr pScrn, int flags)
 	}
 
 	if (xf86LoadSubModule(pScrn, "exa") == NULL) {
-		NGLEFreeRec(pScrn);
-		return FALSE;
-	}
-
-	if (xf86LoadSubModule(pScrn, "ramdac") == NULL) {
 		NGLEFreeRec(pScrn);
 		return FALSE;
 	}
@@ -525,7 +524,8 @@ NGLEScreenInit(SCREEN_INIT_ARGS_DECL)
 			   strerror(errno));
 		return FALSE;
 	}
-	fPtr->regs = ngle_mmap(0x400000, 0x80000000, fPtr->fd, 0);
+
+	fPtr->regs = ngle_mmap(fPtr->reglen, 0x80000000, fPtr->fd, 0);
 
 	if (fPtr->regs == NULL) {
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
@@ -595,7 +595,10 @@ NGLEScreenInit(SCREEN_INIT_ARGS_DECL)
 	xf86SetBackingStore(pScreen);
 
 	if (fPtr) {
-		NGLEInitAccel(pScreen);
+		if (fPtr->gid == STI_DD_SUMMIT) {
+			SummitInitAccel(pScreen);
+		} else
+			NGLEInitAccel(pScreen);
 		xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Using acceleration\n");
 	}
 
@@ -642,7 +645,7 @@ NGLECloseScreen(CLOSE_SCREEN_ARGS_DECL)
 
 	if (pScrn->vtSema) {
 		NGLERestore(pScrn);
-		if (munmap(fPtr->regs, 0x40000) == -1) {
+		if (munmap(fPtr->regs, fPtr->reglen) == -1) {
 			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 				   "munmap engine: %s\n", strerror(errno));
 		}
