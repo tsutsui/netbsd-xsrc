@@ -1,4 +1,4 @@
-/* $NetBSD: ngle_driver.c,v 1.7 2024/12/07 10:48:38 macallan Exp $ */
+/* $NetBSD: ngle_driver.c,v 1.8 2024/12/10 10:02:52 macallan Exp $ */
 /*
  * Copyright (c) 2024 Michael Lorenz
  * All rights reserved.
@@ -297,10 +297,6 @@ NGLEProbe(DriverPtr drv, int flags)
 		return TRUE;
 	}
 
-	if (numDevSections > 1) {
-		xf86Msg(X_ERROR, "Ignoring additional device sections\n");
-		numDevSections = 1;
-	}
 	/* ok, at this point we know we've got a NGLE */
 	for (i = 0; i < numDevSections; i++) {
 	
