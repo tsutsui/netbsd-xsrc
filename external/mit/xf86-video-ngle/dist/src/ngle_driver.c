@@ -1,4 +1,4 @@
-/* $NetBSD: ngle_driver.c,v 1.8 2024/12/10 10:02:52 macallan Exp $ */
+/* $NetBSD: ngle_driver.c,v 1.9 2024/12/10 10:13:19 macallan Exp $ */
 /*
  * Copyright (c) 2024 Michael Lorenz
  * All rights reserved.
@@ -277,8 +277,6 @@ NGLEProbe(DriverPtr drv, int flags)
 	if ((name = xf86TokenToString(NGLEChipsets, gid)) == NULL)
 		return FALSE;
 
-	xf86Msg(X_INFO, "%s: found %s ( GID %08x )\n", __func__, name, gid);
-
 	if ( xf86DoConfigure && xf86DoConfigurePass1 ) {
 		GDevPtr pGDev;
 
@@ -390,7 +388,8 @@ NGLEPreInit(ScrnInfoPtr pScrn, int flags)
 			fPtr->reglen = 0x1000000;
 			break;
 	}
-	xf86Msg(X_ERROR, "gid %08x fb access %08x\n", fPtr->gid, fPtr->fbacc);		
+	xf86Msg(X_INFO, "%s: found %s ( GID %08x )\n",
+	    __func__, xf86TokenToString(NGLEChipsets, gid), gid);
 
 	/* Handle depth */
 	default_depth = fPtr->fbi.fbi_bitsperpixel <= 24 ? fPtr->fbi.fbi_bitsperpixel : 24;
