@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $NetBSD: summit_accel.c,v 1.1 2024/12/07 10:48:38 macallan Exp $ */
+/* $NetBSD: summit_accel.c,v 1.2 2024/12/25 05:45:53 macallan Exp $ */
 
 #include <sys/types.h>
 #include <dev/ic/summitreg.h>
@@ -47,8 +47,8 @@ SummitWaitMarker(ScreenPtr pScreen, int Marker)
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
 	NGLEPtr fPtr = NGLEPTR(pScrn);
 	int bail = 10000000, reg;
+
 	ENTER;
-	
 	do {
 		reg = NGLERead4(fPtr, VISFX_STATUS);
 		bail--;
@@ -83,8 +83,8 @@ SummitPrepareCopy
 	fPtr->offset = srcoff / srcpitch;
 	if (fPtr->hwmode != HW_BLIT) {
 		SummitWaitMarker(pSrcPixmap->drawable.pScreen, 0);
-		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, VISFX_WRITE_MODE_PLAIN);
-		NGLEWrite4(fPtr, VISFX_VRAM_READ_MODE, VISFX_READ_MODE_COPY);
+		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, OTC01 | BIN8F | BUFFL);
+		NGLEWrite4(fPtr, VISFX_VRAM_READ_MODE, OTC01 | BIN8F | BUFFL);
 		fPtr->hwmode = HW_BLIT;
 	}
 	NGLEWrite4(fPtr, VISFX_PLANE_MASK, planemask);
@@ -140,7 +140,7 @@ SummitPrepareSolid(
 	if (alu != GXcopy) return FALSE;
 	if (fPtr->hwmode != HW_FILL) {
 		SummitWaitMarker(pPixmap->drawable.pScreen, 0);
-		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, VISFX_WRITE_MODE_FILL);
+		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, OTC32 | BIN8F | BUFFL | 0x8c0);
 		fPtr->hwmode = HW_FILL;
 	}
 	NGLEWrite4(fPtr, VISFX_FG_COLOUR, fg);
@@ -183,8 +183,8 @@ SummitPrepareAccess(PixmapPtr pPixmap, int index)
 	NGLEPtr fPtr = NGLEPTR(pScrn);
 
 	SummitWaitMarker(pPixmap->drawable.pScreen, 0);
-	NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, VISFX_WRITE_MODE_PLAIN);
-	NGLEWrite4(fPtr, VISFX_VRAM_READ_MODE, VISFX_READ_MODE_COPY);
+	NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, OTC01 | BIN8F | BUFFL);
+	NGLEWrite4(fPtr, VISFX_VRAM_READ_MODE, OTC01 | BIN8F | BUFFL);
 	fPtr->hwmode = HW_BLIT;
 	
 	return TRUE;
@@ -209,7 +209,7 @@ SummitInitAccel(ScreenPtr pScreen)
 	pExa->memoryBase = fPtr->fbmem;
 	lines = 1;/* until we figure out how to use more memory */
 	DBGMSG(X_ERROR, "lines %d\n", lines);	
-	pExa->memorySize = fPtr->fbi.fbi_stride * (fPtr->fbi.fbi_height + 1); //fPtr->fbmem_len;
+	pExa->memorySize = fPtr->fbi.fbi_stride * (fPtr->fbi.fbi_height + 1);// fPtr->fbmem_len;
 	pExa->offScreenBase = fPtr->fbi.fbi_stride * fPtr->fbi.fbi_height;
 	pExa->pixmapOffsetAlign = fPtr->fbi.fbi_stride;
 	pExa->pixmapPitchAlign = fPtr->fbi.fbi_stride;
