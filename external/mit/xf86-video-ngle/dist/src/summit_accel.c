@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $NetBSD: summit_accel.c,v 1.2 2024/12/25 05:45:53 macallan Exp $ */
+/* $NetBSD: summit_accel.c,v 1.3 2024/12/26 11:26:15 macallan Exp $ */
 
 #include <sys/types.h>
 #include <dev/ic/summitreg.h>
@@ -46,18 +46,26 @@ SummitWaitMarker(ScreenPtr pScreen, int Marker)
 {
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
 	NGLEPtr fPtr = NGLEPTR(pScrn);
-	int bail = 10000000, reg;
+	int reg;
 
 	ENTER;
 	do {
 		reg = NGLERead4(fPtr, VISFX_STATUS);
-		bail--;
-		if (bail == 0) {
-			xf86Msg(X_ERROR, "%s status %08x\n", __func__, reg);
-			return;
-		}
-	} while (reg != 0);
+	} while ((reg & 0x01000000) != 0);
+	if (reg != 0) {
+		xf86Msg(X_ERROR, "%s status %08x\n", __func__, reg);
+		xf86Msg(X_ERROR, "fault %08x\n", NGLERead4(fPtr, 0x641040));
+	}
 	LEAVE;
+}
+
+static void
+SummitWaitFifo(NGLEPtr fPtr, int count)
+{
+	int reg;
+	do {
+		reg = NGLERead4(fPtr, 0xa41440/*VISFX_FIFO*/);
+	} while (reg < count);
 }
 
 static Bool
@@ -79,14 +87,15 @@ SummitPrepareCopy
 	ENTER;
 
 	DBGMSG(X_ERROR, "%s %d %d\n", __func__, srcoff, srcpitch);
-	if (alu != GXcopy) return FALSE;
 	fPtr->offset = srcoff / srcpitch;
 	if (fPtr->hwmode != HW_BLIT) {
 		SummitWaitMarker(pSrcPixmap->drawable.pScreen, 0);
+		//SummitWaitFifo(fPtr, 3);		
 		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, OTC01 | BIN8F | BUFFL);
 		NGLEWrite4(fPtr, VISFX_VRAM_READ_MODE, OTC01 | BIN8F | BUFFL);
 		fPtr->hwmode = HW_BLIT;
 	}
+	NGLEWrite4(fPtr, VISFX_IBO, alu);
 	NGLEWrite4(fPtr, VISFX_PLANE_MASK, planemask);
 	LEAVE;
 	return TRUE;
@@ -111,6 +120,7 @@ SummitCopy
 
 	ENTER;
 	SummitWaitMarker(pDstPixmap->drawable.pScreen, 0);
+	//SummitWaitFifo(fPtr, 8);
 	NGLEWrite4(fPtr, VISFX_COPY_SRC, (xs << 16) | (ys + fPtr->offset));
 	NGLEWrite4(fPtr, VISFX_COPY_WH, (wi << 16) | he);
 	NGLEWrite4(fPtr, VISFX_COPY_DST, (xd << 16) | (yd + (dstoff / dstpitch)));
@@ -137,12 +147,13 @@ SummitPrepareSolid(
 	NGLEPtr fPtr = NGLEPTR(pScrn);
 
 	ENTER;
-	if (alu != GXcopy) return FALSE;
+	//SummitWaitFifo(fPtr, 6);		
 	if (fPtr->hwmode != HW_FILL) {
 		SummitWaitMarker(pPixmap->drawable.pScreen, 0);
 		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, OTC32 | BIN8F | BUFFL | 0x8c0);
 		fPtr->hwmode = HW_FILL;
 	}
+	NGLEWrite4(fPtr, VISFX_IBO, alu);
 	NGLEWrite4(fPtr, VISFX_FG_COLOUR, fg);
 	NGLEWrite4(fPtr, VISFX_PLANE_MASK, planemask);
 	LEAVE;
@@ -169,11 +180,49 @@ SummitSolid(
 	y1 += offset / pitch;
 	
 	SummitWaitMarker(pPixmap->drawable.pScreen, 0);
+	//SummitWaitFifo(fPtr, 6);		
 	NGLEWrite4(fPtr, VISFX_START, (x1 << 16) | y1);
 	NGLEWrite4(fPtr, VISFX_SIZE, (wi << 16) | he);
 
 	exaMarkSync(pPixmap->drawable.pScreen);
 	LEAVE;
+}
+
+static Bool
+SummitUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h,
+    char *src, int src_pitch)
+{
+	ScrnInfoPtr pScrn = xf86Screens[pDst->drawable.pScreen->myNum];
+	NGLEPtr fPtr = NGLEPTR(pScrn);
+	int	ofs =  exaGetPixmapOffset(pDst);
+	int	dst_pitch  = exaGetPixmapPitch(pDst);
+	int i;
+	uint32_t *line;
+
+//	int bpp    = pDst->drawable.bitsPerPixel;
+//	int cpp    = (bpp + 7) >> 3;
+//	int wBytes = w * cpp;
+
+	ENTER;
+	//xf86Msg(X_ERROR, "%s bpp %d\n", __func__, pDst->drawable.bitsPerPixel);
+	if (fPtr->hwmode != HW_BINC) {
+		SummitWaitMarker(pDst->drawable.pScreen, 0);
+		//SummitWaitFifo(fPtr, 3);		
+		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, OTC01 | BIN8F | BUFFL);
+		NGLEWrite4(fPtr, VISFX_VRAM_READ_MODE, OTC01 | BIN8F | BUFFL);
+		NGLEWrite4(fPtr, VISFX_PLANE_MASK, 0xffffffff);
+		NGLEWrite4(fPtr, VISFX_IBO, GXcopy);
+		fPtr->hwmode = HW_BINC;
+	}
+	while (h--) {
+		NGLEWrite4(fPtr, VISFX_VRAM_WRITE_DEST, (y << 16) | x);
+		line = (uint32_t *)src;
+		for (i = 0; i < w; i++)
+			NGLEWrite4(fPtr, VISFX_VRAM_WRITE_DATA_INCRX, line[i]);
+		src += src_pitch;
+		y++;
+	}
+	return TRUE;
 }
 
 Bool
@@ -182,13 +231,28 @@ SummitPrepareAccess(PixmapPtr pPixmap, int index)
 	ScrnInfoPtr pScrn = xf86Screens[pPixmap->drawable.pScreen->myNum];
 	NGLEPtr fPtr = NGLEPTR(pScrn);
 
+	ENTER;
 	SummitWaitMarker(pPixmap->drawable.pScreen, 0);
 	NGLEWrite4(fPtr, VISFX_VRAM_WRITE_MODE, OTC01 | BIN8F | BUFFL);
 	NGLEWrite4(fPtr, VISFX_VRAM_READ_MODE, OTC01 | BIN8F | BUFFL);
-	fPtr->hwmode = HW_BLIT;
-	
+	NGLEWrite4(fPtr, VISFX_IBO, GXcopy);
+	NGLEWrite4(fPtr, VISFX_CONTROL, 0x200);
+	fPtr->hwmode = HW_FB;
+	LEAVE;
 	return TRUE;
 }
+
+void
+SummitFinishAccess(PixmapPtr pPixmap, int index)
+{
+	ScrnInfoPtr pScrn = xf86Screens[pPixmap->drawable.pScreen->myNum];
+	NGLEPtr fPtr = NGLEPTR(pScrn);
+
+	ENTER;
+	NGLEWrite4(fPtr, VISFX_CONTROL, 0);
+	LEAVE;
+}
+
 Bool
 SummitInitAccel(ScreenPtr pScreen)
 {
@@ -228,8 +292,12 @@ SummitInitAccel(ScreenPtr pScreen)
 	pExa->DoneCopy = SummitDoneCopy;
 	pExa->PrepareCopy = SummitPrepareCopy;
 	pExa->PrepareSolid = SummitPrepareSolid;
+	pExa->UploadToScreen = SummitUploadToScreen;
 	pExa->PrepareAccess = SummitPrepareAccess;
+	pExa->FinishAccess = SummitFinishAccess;
 	SummitWaitMarker(pScreen, 0);
+	NGLEWrite4(fPtr, VISFX_FOE, FOE_BLEND_ROP);
+	NGLEWrite4(fPtr, VISFX_IBO, GXcopy);
 
 	return exaDriverInit(pScreen, pExa);
 }
