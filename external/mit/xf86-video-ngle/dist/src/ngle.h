@@ -68,6 +68,7 @@ typedef struct {
 #define HW_FB	0
 #define HW_FILL	1
 #define HW_BLIT	2
+#define HW_BINC	3
 } NGLERec, *NGLEPtr;
 
 #define NGLEPTR(p) ((NGLEPtr)((p)->driverPrivate))
