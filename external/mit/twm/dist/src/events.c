@@ -2185,7 +2185,9 @@ HandleLeaveNotify(void)
         }
         if (Scr->FocusRoot) {
 
-            if (Event.xcrossing.detail != NotifyInferior) {
+            if (Event.xcrossing.detail != NotifyInferior &&
+                Event.xcrossing.detail != NotifyVirtual &&
+                Event.xcrossing.detail != NotifyNonlinearVirtual) {
 
                 /*
                  * Scan for EnterNotify events to see if we can avoid some
