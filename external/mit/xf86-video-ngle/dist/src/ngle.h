@@ -64,11 +64,12 @@ typedef struct {
 	OptionInfoPtr		Options;
 	ExaDriverPtr		pExa;
 	uint32_t		gid, buf, fbacc;
-	int 			offset, hwmode;
+	int 			offset, hwmode, offsetd;
 #define HW_FB	0
 #define HW_FILL	1
 #define HW_BLIT	2
 #define HW_BINC	3
+	uint32_t read_mode, write_mode;
 } NGLERec, *NGLEPtr;
 
 #define NGLEPTR(p) ((NGLEPtr)((p)->driverPrivate))
