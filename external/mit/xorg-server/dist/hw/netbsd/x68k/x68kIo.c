@@ -84,10 +84,13 @@ static void x68kEnqueueEvents(void);
 void
 x68kSigIOHandler(int sig)
 {
-    int olderrno = errno;
+    int olderrno;
 
+    input_lock();
+    olderrno = errno;
     x68kEnqueueEvents();
     errno = olderrno;
+    input_unlock();
 }
 
 /*--------------------------------------------------------------------
