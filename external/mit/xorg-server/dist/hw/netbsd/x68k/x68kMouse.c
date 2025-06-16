@@ -153,6 +153,18 @@ x68kMouseProc(DeviceIntPtr device, int what)
 		x68kMouseCtrl, GetMotionHistorySize(),
 		2, axes_labels);
 
+	    /* X valuator */
+	    InitValuatorAxisStruct(device, 0, axes_labels[0],
+		NO_AXIS_LIMITS, NO_AXIS_LIMITS, 1, 0, 1, Relative);
+	    device->valuator->axisVal[0] = screenInfo.screens[0]->width / 2;
+	    device->last.valuators[0] = device->valuator->axisVal[0];
+
+	    /* Y valuator */
+	    InitValuatorAxisStruct(device, 1, axes_labels[1],
+		NO_AXIS_LIMITS, NO_AXIS_LIMITS, 1, 0, 1, Relative);
+	    device->valuator->axisVal[1] = screenInfo.screens[0]->height / 2;
+	    device->last.valuators[1] = device->valuator->axisVal[1];
+
 	    /* Initialize emulation 3 buttons settings */
 	    emu3enable = TRUE;			/* XXX should be configurable */
 	    emu3timeout = EMU3B_DEF_TIMEOUT;	/* XXX should be configurable */
