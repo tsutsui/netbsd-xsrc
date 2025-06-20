@@ -170,9 +170,6 @@ InitInput(int argc, char *argv[])
 
     if ( !mieqInit() )
         FatalError("mieqInit failed\n");
-
-    /* setup SIGIO handler for asynchronous event handling */
-    (void)OsSignal(SIGIO, x68kSigIOHandler);
 }
 
 void
@@ -194,9 +191,6 @@ ddxGiveUp(enum ExitCode error)
     int i;
     X68kScreenRec *screen;
     X68kFbProcRec *fb;
-
-    /* give up SIGIO handling */
-    (void) OsSignal(SIGIO, SIG_IGN);
 
     /* close all frame buffers */
     for (i = 0; i < nscreens; i++) {
