@@ -378,10 +378,10 @@ x68kCrossScreen(ScreenPtr pScreen, int entering)
 }
 
 static void
-x68kWarpCursor(DeviceIntPtr pDev, ScreenPtr pScreen, int x, int y)
+x68kWarpCursor(DeviceIntPtr device, ScreenPtr pScreen, int x, int y)
 {
     input_lock();
-    miPointerWarpCursor (pDev, pScreen, x, y);
+    miPointerWarpCursor(device, pScreen, x, y);
     input_unlock();
 }
 
