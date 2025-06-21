@@ -105,12 +105,6 @@ typedef struct _X68kFbProcRec {
 #endif
 #define X68K_FB_TYPES   2
 
-typedef struct _X68kMousePriv {
-    int fd;
-    int bmask;
-    MouseEmu3btn emu3btn;
-} X68kMousePriv, *X68kMousePrivPtr;
-
 typedef struct _X68kKbdPriv {
     int type;
     int fd;
